@@ -1,0 +1,36 @@
+$ sudo ./install-fedora.sh 
+Fedora rawhide - x86_64
+
+$ du -h System/
+305M	System/
+
+$ sudo ./test-init.sh 
++ set -e
++ test -z ''
++ exec unshare -m ./test-init.sh init
++ set -e
++ test -z init
++ mkdir -p sysroot
++ mount -t tmpfs tmpfs sysroot
++ mkdir -p sysroot/usr
++ mount --bind System sysroot/usr
++ mount -o remount,ro,bind sysroot/usr sysroot/usr
++ ln -s usr/bin sysroot/bin
++ ln -s usr/lib/x86_64-linux-gnu sysroot/lib64
++ ln -s usr/etc sysroot/etc
++ mkdir -p Data/var sysroot/var
++ mount --bind Data/var sysroot/var
++ mkdir -p sysroot/proc sysroot/sys sysroot/dev
++ mount -t proc proc sysroot/proc
++ mount -t sysfs sysfs sysroot/sys
++ mount -t devtmpfs devtmpfs sysroot/dev
++ exec chroot sysroot bash
+bash-4.3# 
+bash-4.3# mount
+tmpfs on / type tmpfs (rw,relatime)
+/dev/sda5 on /usr type btrfs (ro,relatime,ssd,space_cache,subvolid=5,subvol=/kay/src/bus1/build/System)
+/dev/sda5 on /var type btrfs (rw,relatime,ssd,space_cache,subvolid=5,subvol=/kay/src/bus1/build/Data/var)
+proc on /proc type proc (rw,relatime)
+sysfs on /sys type sysfs (rw,relatime)
+devtmpfs on /dev type devtmpfs (rw,relatime,size=4020392k,nr_inodes=1005098,mode=755)
+bash-4.3# 
