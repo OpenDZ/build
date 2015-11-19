@@ -17,8 +17,11 @@ mount -o remount,ro,bind sysroot/usr sysroot/usr
 
 # top-level symlinks
 ln -s usr/bin sysroot/bin
-ln -s usr/lib/x86_64-linux-gnu sysroot/lib64
 ln -s usr/etc sysroot/etc
+
+# lib64 ABI
+mkdir -p sysroot/lib64
+ln -s /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 sysroot/lib64/ld-linux-x86-64.so.2
 
 # var is persistent
 mkdir -p Data/var sysroot/var

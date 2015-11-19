@@ -16,7 +16,6 @@ ln -s usr/etc $ROOT/etc
 # move $libdir to multilib tuple dir
 mkdir -p $ROOT/usr/lib/x86_64-linux-gnu
 ln -s lib/x86_64-linux-gnu $ROOT/usr/lib64
-ln -s usr/lib/x86_64-linux-gnu $ROOT/lib64
 
 # install rawhide packages
 dnf -y --nogpg \
@@ -31,6 +30,10 @@ dnf -y --nogpg \
   less \
   vim
 
+# hook up arch libdir to replace lib64
+echo "/usr/lib/x86_64-linux-gnu" > $ROOT/etc/ld.so.conf.d/x86_64-linux-gnu.conf
+rm -f $ROOT/usr/lib64
+
 # merge sbin into bin
 mv --no-clobber $ROOT/usr/sbin/* $ROOT/usr/bin
 rm -rf $ROOT/usr/sbin
@@ -38,6 +41,8 @@ ln -s bin $ROOT/usr/sbin
 
 # delete cruft
 rm -rf $ROOT/usr/{tmp,games,local}
+
+$ROOT/usr/bin/ldconfig -r $ROOT
 
 # copy usr
 mv $ROOT/usr System
