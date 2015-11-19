@@ -19,7 +19,7 @@ mount -o remount,ro,bind sysroot/usr sysroot/usr
 ln -s usr/bin sysroot/bin
 ln -s usr/etc sysroot/etc
 
-# lib64 ABI
+# x86_64 dynloader ABI
 mkdir -p sysroot/lib64
 ln -s /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 sysroot/lib64/ld-linux-x86-64.so.2
 

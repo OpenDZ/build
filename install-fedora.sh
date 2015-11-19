@@ -5,9 +5,7 @@ set -e
 test -e System && exit 1
 test "$UID" == "0" || exit 1
 
-ROOT=$(mktemp $PWD/install-tmpXXX)
-
-rm -rf $ROOT
+ROOT=$(mktemp -d /tmp/install-tmpXXX)
 
 # move etc into usr
 mkdir -p $ROOT/usr/etc
