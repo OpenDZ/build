@@ -26,7 +26,7 @@ mount -t proc proc /proc
 mount -t sysfs sysfs /sys
 mount -t devtmpfs devtmpfs /dev
 
-echo "Welcome to bus1"
+echo -e "\nWelcome to bus1!\n"
 
 exec /usr/bin/bash
 EOF
@@ -36,6 +36,8 @@ chmod 0755 $ROOT/init
 BINARIES="\
   /usr/bin/bash \
   /usr/bin/ls \
+  /usr/bin/cat \
+  /usr/bin/stat \
   /usr/bin/mount"
 
 cp --dereference --no-clobber $BINARIES $ROOT/bin
