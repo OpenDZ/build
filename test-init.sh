@@ -21,7 +21,7 @@ ln -s usr/etc sysroot/etc
 
 # x86_64 dynloader ABI
 mkdir -p sysroot/lib64
-ln -s /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 sysroot/lib64/ld-linux-x86-64.so.2
+ln -s ../usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 sysroot/lib64/ld-linux-x86-64.so.2
 
 # var is persistent
 mkdir -p Data/var sysroot/var
