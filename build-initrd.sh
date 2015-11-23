@@ -19,9 +19,16 @@ echo "/usr/lib/x86_64-linux-gnu" > $ROOT/etc/ld.so.conf.d/x86_64-linux-gnu.conf
 cat > $ROOT/init << EOF
 #!/bin/bash
 
-mount -t proc proc /proc
-mount -t sysfs sysfs /sys
-mount -t devtmpfs devtmpfs /dev
+mount -t proc -o nosuid,noexec,nodev proc /proc
+mount -t sysfs -o nosuid,noexec,nodev sysfs /sys
+mount -t devtmpfs -o mode=0755,noexec,nosuid,strictatime devtmpfs /dev
+ln -s /proc/self/fd /dev/fd
+ln -s /proc/self/fd/0 /dev/stdin
+ln -s /proc/self/fd/1 /dev/stdout
+ln -s /proc/self/fd/2 /dev/stderr
+mount -t devpts -o gid=5,mode=620,noexec,nosuid devpts /dev/pts
+mount -t tmpfs -o mode=1777,noexec,nosuid,nodev,strictatime tmpfs /dev/shm
+mount -t tmpfs -o mode=0755,noexec,nosuid,nodev,strictatime tmpfs /run
 
 echo -e "\nWelcome to bus1!\n"
 
