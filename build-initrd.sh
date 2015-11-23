@@ -42,6 +42,7 @@ BINARIES="\
   ls \
   cat \
   stat \
+  ln \
   mount"
 
 # resolve and install needed libraries
