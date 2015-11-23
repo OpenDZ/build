@@ -19,7 +19,7 @@ BINARIES="\
 MODULES="\
   btrfs
   squashfs \
-  fat \
+  vfat \
   loop"
 
 # ------------------------------------------------------------------------------
@@ -37,6 +37,7 @@ mkdir -p $ROOT/{sys,proc,lib64}
 mkdir -p $ROOT/usr/bin
 mkdir -p $ROOT/usr/lib/x86_64-linux-gnu
 ln -s usr/bin $ROOT/bin
+ln -s usr/bin $ROOT/sbin
 ln -s ../usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 $ROOT/lib64/ld-linux-x86-64.so.2
 
 mkdir -p $ROOT/etc/ld.so.conf.d/
