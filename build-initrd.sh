@@ -42,6 +42,7 @@ chmod 0755 $ROOT/init
 
 BINARIES="\
   bash \
+  sh \
   ls \
   cat \
   stat \
@@ -49,22 +50,28 @@ BINARIES="\
   mkdir \
   mount"
 
+copy() {
+  cp --no-dereference --no-clobber "$1" "$2"
+  test -L "$1" && cp --no-clobber $(readlink -f "$1") "$2"
+  return 0
+}
+
 # resolve and install needed libraries
-cp --dereference --no-clobber /lib64/ld-linux-x86-64.so.2 $ROOT/usr/lib/x86_64-linux-gnu
+copy /lib64/ld-linux-x86-64.so.2 $ROOT/usr/lib/x86_64-linux-gnu
+
 for i in $BINARIES; do
-  cp --dereference --no-clobber $(which $i) $ROOT/bin
-  ldd $(type -P $i) \
-      | ( while read line || [[ -n "$line" ]]; do
-                set -- $line
-                while (( $# > 0 )); do
-                    a=$1
-                    shift
-                    [[ $a == '=>' ]] || continue
-                    break
-                done
-                printf -- "%s\n" "$1"
-          done ) \
-      | xargs -I '{}' cp --dereference --no-clobber '{}' $ROOT/usr/lib/x86_64-linux-gnu
+  copy $(which $i) $ROOT/bin
+
+  ldd $(type -P $i) | ( while read line || [[ -n "$line" ]]; do
+    set -- $line
+    while (( $# > 0 )); do
+      a=$1
+      shift
+      [[ $a == '=>' ]] || continue
+      break
+    done
+    [[ ! -e "$1" ]] || copy "$1" $ROOT/usr/lib/x86_64-linux-gnu
+  done )
 done
 
 ldconfig -r $ROOT
