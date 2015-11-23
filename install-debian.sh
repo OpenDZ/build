@@ -31,5 +31,5 @@ ln -s bin $ROOT/usr/sbin
 rm -rf $ROOT/usr/{tmp,games,local}
 
 # copy usr
-mv $ROOT/usr System
+mksquashfs $ROOT/usr system.img
 rm -rf $ROOT

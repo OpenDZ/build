@@ -43,5 +43,5 @@ rm -rf $ROOT/usr/{tmp,games,local}
 $ROOT/usr/bin/ldconfig -r $ROOT
 
 # copy usr
-mv $ROOT/usr System
+mksquashfs $ROOT/usr system.img
 rm -rf $ROOT
