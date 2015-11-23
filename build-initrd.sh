@@ -26,8 +26,11 @@ ln -s /proc/self/fd /dev/fd
 ln -s /proc/self/fd/0 /dev/stdin
 ln -s /proc/self/fd/1 /dev/stdout
 ln -s /proc/self/fd/2 /dev/stderr
+mkdir -m 0755 /dev/pts
 mount -t devpts -o gid=5,mode=620,noexec,nosuid devpts /dev/pts
+mkdir -m 0755 /dev/shm
 mount -t tmpfs -o mode=1777,noexec,nosuid,nodev,strictatime tmpfs /dev/shm
+mkdir -m 0755 /run
 mount -t tmpfs -o mode=0755,noexec,nosuid,nodev,strictatime tmpfs /run
 
 echo -e "\nWelcome to bus1!\n"
@@ -43,6 +46,7 @@ BINARIES="\
   cat \
   stat \
   ln \
+  mkdir \
   mount"
 
 # resolve and install needed libraries
