@@ -53,7 +53,18 @@ BINARIES="\
 cp --dereference --no-clobber /lib64/ld-linux-x86-64.so.2 $ROOT/usr/lib/x86_64-linux-gnu
 for i in $BINARIES; do
   cp --dereference --no-clobber $(which $i) $ROOT/bin
-  ldd $(which $i) | grep "=> /" | awk '{print $3}' | xargs -I '{}' cp --dereference --no-clobber '{}' $ROOT/usr/lib/x86_64-linux-gnu
+  ldd $(type -P $i) \
+      | ( while read line || [[ -n "$line" ]]; do
+                set -- $line
+                while (( $# > 0 )); do
+                    a=$1
+                    shift
+                    [[ $a == '=>' ]] || continue
+                    break
+                done
+                printf -- "%s\n" "$1"
+          done ) \
+      | xargs -I '{}' cp --dereference --no-clobber '{}' $ROOT/usr/lib/x86_64-linux-gnu
 done
 
 ldconfig -r $ROOT
