@@ -1,9 +1,36 @@
 #!/bin/bash
 
 set -e
-
 test "$UID" == "0" || exit 1
 
+# ------------------------------------------------------------------------------
+BINARIES="\
+  bash \
+  sh \
+  ls \
+  cat \
+  stat \
+  ln \
+  mkdir \
+  modprobe \
+  lsmod \
+  mount"
+
+MODULES="\
+  btrfs
+  squashfs \
+  fat \
+  loop"
+
+# ------------------------------------------------------------------------------
+copy() {
+  mkdir -p "$2"
+  cp --no-dereference --no-clobber "$1" "$2"
+  test -L "$1" && cp --no-clobber $(readlink -f "$1") "$2"
+  return 0
+}
+
+# ------------------------------------------------------------------------------
 ROOT=$(mktemp -d /tmp/initrd-tmpXXX)
 
 mkdir -p $ROOT/{sys,proc,lib64}
@@ -16,6 +43,7 @@ mkdir -p $ROOT/etc/ld.so.conf.d/
 echo "include ld.so.conf.d/*.conf" > $ROOT/etc/ld.so.conf
 echo "/usr/lib/x86_64-linux-gnu" > $ROOT/etc/ld.so.conf.d/x86_64-linux-gnu.conf
 
+# ------------------------------------------------------------------------------
 cat > $ROOT/init << EOF
 #!/bin/bash
 
@@ -40,22 +68,7 @@ EOF
 
 chmod 0755 $ROOT/init
 
-BINARIES="\
-  bash \
-  sh \
-  ls \
-  cat \
-  stat \
-  ln \
-  mkdir \
-  mount"
-
-copy() {
-  cp --no-dereference --no-clobber "$1" "$2"
-  test -L "$1" && cp --no-clobber $(readlink -f "$1") "$2"
-  return 0
-}
-
+# ------------------------------------------------------------------------------
 # resolve and install needed libraries
 copy /lib64/ld-linux-x86-64.so.2 $ROOT/usr/lib/x86_64-linux-gnu
 
@@ -76,5 +89,19 @@ done
 
 ldconfig -r $ROOT
 
+# ------------------------------------------------------------------------------
+for i in $MODULES; do
+  modprobe --show-depends --ignore-install $i | (while read cmd path options || [ -n "$cmd" ]; do
+    copy "$path" "$ROOT$path"
+  done )
+done
+
+copy /lib/modules/$(uname -r)/modules.order $ROOT/lib/modules/$(uname -r)
+copy /lib/modules/$(uname -r)/modules.builtin $ROOT/lib/modules/$(uname -r)
+
+depmod -a -b $ROOT
+
+# ------------------------------------------------------------------------------
 (cd $ROOT; find . | cpio --quiet -o -H newc | gzip) > initrd
+[[ ! "$1" == "t" ]] || tree $ROOT
 rm -rf $ROOT
