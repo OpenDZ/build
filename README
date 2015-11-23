@@ -1,10 +1,12 @@
-$ sudo ./install-fedora.sh 
-Fedora rawhide - x86_64
+[kay@ank build]$ sudo ./install-fedora.sh 
+Fedora rawhide - x86_64                                                                                               5.4 MB/s |  44 MB     00:08    
+[...]
+Creating 4.0 filesystem on system.img, block size 131072.
 
-$ du -h System/
-305M	System/
+[kay@ank build]$ ls -lh system.img 
+-rw-r--r-- 1 root root 92M Nov 23 22:47 system.img
 
-$ sudo ./test-init.sh 
+[kay@ank build]$ sudo ./test-init.sh 
 + set -e
 + test -z ''
 + exec unshare -m ./test-init.sh init
@@ -13,12 +15,12 @@ $ sudo ./test-init.sh
 + mkdir -p sysroot
 + mount -t tmpfs tmpfs sysroot
 + mkdir -p sysroot/usr
-+ mount --bind System sysroot/usr
++ mount -tsquashfs system.img sysroot/usr
 + mount -o remount,ro,bind sysroot/usr sysroot/usr
 + ln -s usr/bin sysroot/bin
 + ln -s usr/etc sysroot/etc
 + mkdir -p sysroot/lib64
-+ ln -s /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 sysroot/lib64/ld-linux-x86-64.so.2
++ ln -s ../usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 sysroot/lib64/ld-linux-x86-64.so.2
 + mkdir -p Data/var sysroot/var
 + mount --bind Data/var sysroot/var
 + mkdir -p sysroot/proc sysroot/sys sysroot/dev
@@ -27,37 +29,25 @@ $ sudo ./test-init.sh
 + mount -t devtmpfs devtmpfs sysroot/dev
 + exec chroot sysroot bash
 bash-4.3# 
-bash-4.3# ls -la /
-total 0
-drwxrwxrwt   8 root root  200 Nov 19 17:56 .
-drwxrwxrwt   8 root root  200 Nov 19 17:56 ..
-lrwxrwxrwx   1 root root    7 Nov 19 17:56 bin -> usr/bin
-drwxr-xr-x  22 root root 4500 Nov 19 16:59 dev
-lrwxrwxrwx   1 root root    7 Nov 19 17:56 etc -> usr/etc
-drwxr-xr-x   2 root root   60 Nov 19 17:56 lib64
-dr-xr-xr-x 254 root root    0 Nov 19 11:03 proc
-dr-xr-xr-x  13 root root    0 Nov 19 11:23 sys
-drwxr-xr-x   1 root root   70 Nov 19 14:23 usr
-drwxr-xr-x   1 root root    0 Nov 19 17:55 var
-bash-4.3# 
-bash-4.3# ls -la /usr
-total 4
-drwxr-xr-x 1 root root   70 Nov 19 14:23 .
-drwxrwxrwt 8 root root  200 Nov 19 17:57 ..
-dr-xr-xr-x 1 root root 5582 Nov 19 14:23 bin
-drwxr-xr-x 1 root root 1408 Nov 19 14:23 etc
-drwxr-xr-x 1 root root   18 Nov 19 14:22 include
-dr-xr-xr-x 1 root root  208 Nov 19 14:23 lib
-drwxr-xr-x 1 root root  118 Nov 19 14:23 libexec
-lrwxrwxrwx 1 root root    3 Nov 19 14:23 sbin -> bin
-drwxr-xr-x 1 root root  630 Nov 19 14:23 share
-drwxr-xr-x 1 root root   24 Nov 19 14:22 src
-bash-4.3# 
 bash-4.3# mount
 tmpfs on / type tmpfs (rw,relatime)
-/dev/sda5 on /usr type btrfs (ro,relatime,ssd,space_cache,subvolid=5,subvol=/kay/src/bus1/build/System)
+/home/kay/src/bus1/build/system.img on /usr type squashfs (ro,relatime)
 /dev/sda5 on /var type btrfs (rw,relatime,ssd,space_cache,subvolid=5,subvol=/kay/src/bus1/build/Data/var)
 proc on /proc type proc (rw,relatime)
 sysfs on /sys type sysfs (rw,relatime)
 devtmpfs on /dev type devtmpfs (rw,relatime,size=4020392k,nr_inodes=1005098,mode=755)
 bash-4.3# 
+
+[kay@ank build]$ sudo ./build-initrd.sh t
+/tmp/initrd-tmp0EA
+├── bin -> usr/bin
+├── etc
+│   ├── ld.so.cache
+│   ├── ld.so.conf
+│   └── ld.so.conf.d
+│       └── x86_64-linux-gnu.conf
+[...]
+31 directories, 65 files
+
+[kay@ank build]$ ls -lh initrd 
+-rw-r--r-- 1 root root 3.1M Nov 23 22:51 initrd
