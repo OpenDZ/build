@@ -13,8 +13,12 @@ BINARIES="\
   ln \
   mkdir \
   ldd \
+  dmesg \
   modprobe \
   lsmod \
+  chroot \
+  strace \
+  losetup \
   mount"
 
 MODULES="\
@@ -59,6 +63,8 @@ echo "/usr/lib/x86_64-linux-gnu" > $ROOT/etc/ld.so.conf.d/x86_64-linux-gnu.conf
 cat > $ROOT/init << EOF
 #!/bin/bash
 
+set -e
+
 mount -t proc -o nosuid,noexec,nodev proc /proc
 mount -t sysfs -o nosuid,noexec,nodev sysfs /sys
 mount -t devtmpfs -o mode=0755,noexec,nosuid,strictatime devtmpfs /dev
@@ -75,7 +81,28 @@ mount -t tmpfs -o mode=0755,noexec,nosuid,nodev,strictatime tmpfs /run
 
 echo -e "\nWelcome to bus1!\n"
 
-exec /usr/bin/bash
+modprobe loop
+mkdir -p /mnt
+mount /dev/sda2 /mnt
+
+mkdir -p /sysroot/{usr,dev,proc,sys,run,var,mnt}
+mount -tsquashfs /mnt/System/system.img sysroot/usr
+
+ln -s usr/etc sysroot/etc
+ln -s usr/bin sysroot/bin
+ln -s usr/bin sysroot/sbin
+mkdir -p sysroot/lib64
+ln -s ../usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 sysroot/lib64/ld-linux-x86-64.so.2
+
+mount --bind /mnt/Data sysroot/var
+
+mount --move /dev sysroot/dev
+mount --move /sys sysroot/sys
+mount --move /run sysroot/run
+mount --move /mnt sysroot/mnt
+mount --move /proc sysroot/proc
+
+chroot sysroot /usr/bin/bash
 EOF
 
 chmod 0755 $ROOT/init
@@ -87,7 +114,7 @@ copy sysroot/lib64/ld-linux-x86-64.so.2 $ROOT/usr/lib/x86_64-linux-gnu
 for i in $BINARIES; do
   copy sysroot/usr/bin/$i $ROOT/usr/bin
 
-  chroot sysroot ldd $(type -P /usr/bin/$i) | ( while read line || [[ -n "$line" ]]; do
+  chroot sysroot ldd /usr/bin/$i | ( while read line || [[ -n "$line" ]]; do
     set -- $line
     while (( $# > 0 )); do
       a=$1

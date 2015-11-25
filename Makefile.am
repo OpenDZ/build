@@ -17,7 +17,7 @@ system.img:
 	src/install-$$(. /etc/os-release; echo $$ID).sh
 .DELETE_ON_ERROR: system.img
 
-initrd:
+initrd: src/build-initrd.sh
 	src/build-initrd.sh
 .DELETE_ON_ERROR: initrd
 
