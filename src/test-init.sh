@@ -13,7 +13,6 @@ mount -t tmpfs tmpfs sysroot
 # usr is read-only
 mkdir -p sysroot/usr
 mount -tsquashfs system.img sysroot/usr
-mount -o remount,ro,bind sysroot/usr sysroot/usr
 
 # top-level symlinks
 ln -s usr/bin sysroot/bin

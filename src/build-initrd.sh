@@ -12,6 +12,7 @@ BINARIES="\
   stat \
   ln \
   mkdir \
+  ldd \
   modprobe \
   lsmod \
   mount"
@@ -29,6 +30,16 @@ copy() {
   test -L "$1" && cp --no-clobber $(readlink -f "$1") "$2"
   return 0
 }
+
+# ------------------------------------------------------------------------------
+mkdir -p sysroot
+mount -ttmpfs tmpfs sysroot
+mkdir -p sysroot/usr
+mount -tsquashfs system.img sysroot/usr
+ln -s usr/bin sysroot/bin
+ln -s usr/etc sysroot/etc
+mkdir -p sysroot/lib64
+ln -s ../usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 sysroot/lib64/ld-linux-x86-64.so.2
 
 # ------------------------------------------------------------------------------
 ROOT=$(mktemp -d /tmp/initrd-tmpXXX)
@@ -71,12 +82,12 @@ chmod 0755 $ROOT/init
 
 # ------------------------------------------------------------------------------
 # resolve and install needed libraries
-copy /lib64/ld-linux-x86-64.so.2 $ROOT/usr/lib/x86_64-linux-gnu
+copy sysroot/lib64/ld-linux-x86-64.so.2 $ROOT/usr/lib/x86_64-linux-gnu
 
 for i in $BINARIES; do
-  copy $(which $i) $ROOT/bin
+  copy sysroot/usr/bin/$i $ROOT/usr/bin
 
-  ldd $(type -P $i) | ( while read line || [[ -n "$line" ]]; do
+  chroot sysroot ldd $(type -P /usr/bin/$i) | ( while read line || [[ -n "$line" ]]; do
     set -- $line
     while (( $# > 0 )); do
       a=$1
@@ -84,7 +95,7 @@ for i in $BINARIES; do
       [[ $a == '=>' ]] || continue
       break
     done
-    [[ ! -e "$1" ]] || copy "$1" $ROOT/usr/lib/x86_64-linux-gnu
+    [[ -z $1 ]] || copy sysroot/$1 $ROOT/usr/lib/x86_64-linux-gnu
   done )
 done
 
@@ -105,4 +116,7 @@ depmod -a -b $ROOT
 # ------------------------------------------------------------------------------
 (cd $ROOT; find . | cpio --quiet -o -H newc | gzip) > initrd
 [[ ! "$1" == "t" ]] || tree $ROOT
+
+umount sysroot/usr
+umount sysroot
 rm -rf $ROOT
