@@ -19,7 +19,7 @@ cp ../boot-efi/bootx64.efi $ROOT/EFI/Boot/bootx64.efi
 
 mkdir $ROOT/EFI/bus1
 echo -n "bus1-0815" | iconv -f UTF-8 -t UTF-16LE > $ROOT/release.txt
-echo -n "foo=yes bar=no" | iconv -f UTF-8 -t UTF-16LE > $ROOT/options.txt
+echo -n "foo=yes quiet" | iconv -f UTF-8 -t UTF-16LE > $ROOT/options.txt
 
 linux=linux
 test -e "$linux" || linux=/boot/$(cat /etc/machine-id)/$(uname -r)/linux
@@ -38,5 +38,3 @@ sync
 umount $ROOT
 rmdir $ROOT
 losetup -d $LOOP
-
-echo 
