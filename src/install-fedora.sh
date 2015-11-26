@@ -44,13 +44,23 @@ ln -s bin $ROOT/system/sbin
 # delete cruft
 rm -rf $ROOT/system/{tmp,games,local}
 
+# keep bash happy
+for i in dev sys run proc; do
+    mount --bind /$i $ROOT/$i
+done
+
 # ------------------------------------------------------------------------------
 # install kernel
 dnf -y --nogpg \
   --installroot=$ROOT \
   --releasever=rawhide --disablerepo='*' \
   --enablerepo=fedora --enablerepo=fedora-rawhide-kernel-nodebug install \
+  --exclude grubby \
   kernel
+
+for i in dev sys run proc; do
+    umount $ROOT/$i
+done
 
 # copy kernel and firmware to usr
 mv $ROOT/usr/lib/modules $ROOT/system/lib
