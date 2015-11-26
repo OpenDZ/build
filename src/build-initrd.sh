@@ -83,11 +83,11 @@ mount -t tmpfs -o mode=0755,noexec,nosuid,nodev,strictatime tmpfs /run
 echo -e "\nWelcome to bus1!\n"
 
 modprobe loop
-mkdir -p /mnt
-mount /dev/sda2 /mnt
+mkdir -p /bus1
+mount /dev/sda2 /bus1
 
 mkdir -p /sysroot/{usr,dev,proc,sys,run,var}
-mount -tsquashfs /mnt/System/system.img sysroot/usr
+mount -tsquashfs /bus1/system/system.img sysroot/usr
 
 ln -s usr/etc sysroot/etc
 ln -s usr/bin sysroot/bin
@@ -95,7 +95,7 @@ ln -s usr/bin sysroot/sbin
 mkdir -p sysroot/lib64
 ln -s ../usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 sysroot/lib64/ld-linux-x86-64.so.2
 
-mount --bind /mnt/Data sysroot/var
+mount --bind /bus1/data sysroot/var
 
 mount --move /dev sysroot/dev
 mount --move /sys sysroot/sys

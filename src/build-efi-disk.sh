@@ -49,8 +49,8 @@ mkdir $ROOT/system
 mkfs.xfs ${LOOP}p2
 mount ${LOOP}p2 $ROOT/system
 
-mkdir -p $ROOT/system/{System,Data}
-cp system.img $ROOT/system/System
+mkdir -p $ROOT/system/{system,data}
+cp system.img $ROOT/system/system
 
 umount $ROOT/system
 
