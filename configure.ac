@@ -25,6 +25,11 @@ AC_PROG_MKDIR_P
 AC_CHECK_TOOL(OBJCOPY, objcopy)
 
 # ------------------------------------------------------------------------------
+# arguments
+
+AC_ARG_ENABLE(debug, AS_HELP_STRING([--enable-debug], [enable debug options]))
+
+# ------------------------------------------------------------------------------
 # QEMU and OVMF UEFI firmware
 AS_IF([test x"$cross_compiling" = "xyes"], [], [
         AC_PATH_PROG([QEMU], [qemu-system-x86_64])
