@@ -46,7 +46,7 @@ umount $ROOT/boot
 # ------------------------------------------------------------------------------
 # System
 mkdir $ROOT/system
-mkfs.btrfs ${LOOP}p2
+mkfs.xfs ${LOOP}p2
 mount ${LOOP}p2 $ROOT/system
 
 mkdir -p $ROOT/system/{System,Data}

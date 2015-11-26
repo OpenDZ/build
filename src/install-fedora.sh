@@ -19,6 +19,7 @@ dnf -y --nogpg \
   strace \
   procps-ng \
   kmod \
+  xfsprogs \
   less \
   vim
 

@@ -18,11 +18,12 @@ BINARIES="\
   lsmod \
   chroot \
   strace \
+  setsid \
   losetup \
   mount"
 
 MODULES="\
-  btrfs
+  xfs
   squashfs \
   vfat \
   loop"
@@ -85,7 +86,7 @@ modprobe loop
 mkdir -p /mnt
 mount /dev/sda2 /mnt
 
-mkdir -p /sysroot/{usr,dev,proc,sys,run,var,mnt}
+mkdir -p /sysroot/{usr,dev,proc,sys,run,var}
 mount -tsquashfs /mnt/System/system.img sysroot/usr
 
 ln -s usr/etc sysroot/etc
@@ -99,10 +100,9 @@ mount --bind /mnt/Data sysroot/var
 mount --move /dev sysroot/dev
 mount --move /sys sysroot/sys
 mount --move /run sysroot/run
-mount --move /mnt sysroot/mnt
 mount --move /proc sysroot/proc
 
-chroot sysroot /usr/bin/bash
+exec chroot sysroot /usr/bin/setsid -c /usr/bin/bash -i
 EOF
 
 chmod 0755 $ROOT/init
