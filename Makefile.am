@@ -13,15 +13,17 @@ CLEANFILES += \
   initrd \
   efi-disk.img
 
+all: test-efi
+
 system.img:
 	src/install-$$(. /etc/os-release; echo $$ID).sh
 .DELETE_ON_ERROR: system.img
 
-initrd: src/build-initrd.sh
+initrd: src/build-initrd.sh ../init/org.bus1.init ../init/org.bus1.devices
 	src/build-initrd.sh
 .DELETE_ON_ERROR: initrd
 
-test-init:
+test-init: src/test-init.sh
 	src/test-init.sh
 .PHONY: test-init
 

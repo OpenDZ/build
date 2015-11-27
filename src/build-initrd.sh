@@ -9,16 +9,16 @@ BINARIES="\
   sh \
   ls \
   cat \
-  stat \
   ln \
   mkdir \
+  ps \
+  top \
   ldd \
   dmesg \
   modprobe \
   lsmod \
   chroot \
   strace \
-  setsid \
   losetup \
   mount"
 
@@ -28,15 +28,42 @@ MODULES="\
   vfat \
   loop"
 
+DIRECTORIES="\
+  /usr/share/terminfo/l"
+
 # ------------------------------------------------------------------------------
 copy() {
-  mkdir -p "$2"
-  cp --no-dereference --no-clobber "$1" "$2"
-  test -L "$1" && cp --no-clobber $(readlink -f "$1") "$2"
+  local from=$1
+  local to=$2
+
+  mkdir -p "$to"
+  cp --no-dereference --no-clobber "$from" "$to"
+  test -L "$from" && cp --no-clobber $(readlink -f "$from") "$to"
   return 0
 }
 
+copy_libs() {
+  local binary=$1
+  local root=$2
+
+  ( if [[ -n "$root" ]]; then
+    chroot "$root" ldd "$binary"
+  else
+    ldd "$binary"
+  fi ) | ( while read line || [[ -n "$line" ]]; do
+    set -- $line
+    while (( $# > 0 )); do
+      a=$1
+      shift
+      [[ $a == '=>' ]] || continue
+      break
+    done
+    [[ -z $1 ]] || copy "$root/$1" $ROOT/usr/lib/x86_64-linux-gnu
+  done )
+}
+
 # ------------------------------------------------------------------------------
+# mount system image to copy files from
 mkdir -p sysroot
 mount -ttmpfs tmpfs sysroot
 mkdir -p sysroot/usr
@@ -49,11 +76,11 @@ ln -s ../usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 sysroot/lib64/ld-linux-x8
 # ------------------------------------------------------------------------------
 ROOT=$(mktemp -d /tmp/initrd-tmpXXX)
 
-mkdir -p $ROOT/{sys,proc,lib64}
 mkdir -p $ROOT/usr/bin
-mkdir -p $ROOT/usr/lib/x86_64-linux-gnu
 ln -s usr/bin $ROOT/bin
 ln -s usr/bin $ROOT/sbin
+mkdir -p $ROOT/usr/lib/x86_64-linux-gnu
+mkdir -p $ROOT/lib64
 ln -s ../usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 $ROOT/lib64/ld-linux-x86-64.so.2
 
 mkdir -p $ROOT/etc/ld.so.conf.d/
@@ -61,51 +88,13 @@ echo "include ld.so.conf.d/*.conf" > $ROOT/etc/ld.so.conf
 echo "/usr/lib/x86_64-linux-gnu" > $ROOT/etc/ld.so.conf.d/x86_64-linux-gnu.conf
 
 # ------------------------------------------------------------------------------
-cat > $ROOT/init << EOF
-#!/bin/bash
+# the kernel executes /init
+copy ../init/org.bus1.init $ROOT/usr/bin
+copy_libs ../init/org.bus1.init
+ln -s usr/bin/org.bus1.init $ROOT/init
 
-set -e
-
-mount -t proc -o nosuid,noexec,nodev proc /proc
-mount -t sysfs -o nosuid,noexec,nodev sysfs /sys
-mount -t devtmpfs -o mode=0755,noexec,nosuid,strictatime devtmpfs /dev
-ln -s /proc/self/fd /dev/fd
-ln -s /proc/self/fd/0 /dev/stdin
-ln -s /proc/self/fd/1 /dev/stdout
-ln -s /proc/self/fd/2 /dev/stderr
-mkdir -m 0755 /dev/pts
-mount -t devpts -o gid=5,mode=620,noexec,nosuid devpts /dev/pts
-mkdir -m 0755 /dev/shm
-mount -t tmpfs -o mode=1777,noexec,nosuid,nodev,strictatime tmpfs /dev/shm
-mkdir -m 0755 /run
-mount -t tmpfs -o mode=0755,noexec,nosuid,nodev,strictatime tmpfs /run
-
-echo -e "\nWelcome to bus1!\n"
-
-modprobe loop
-mkdir -p /bus1
-mount /dev/sda2 /bus1
-
-mkdir -p /sysroot/{usr,dev,proc,sys,run,var}
-mount -tsquashfs /bus1/system/system.img sysroot/usr
-
-ln -s usr/etc sysroot/etc
-ln -s usr/bin sysroot/bin
-ln -s usr/bin sysroot/sbin
-mkdir -p sysroot/lib64
-ln -s ../usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 sysroot/lib64/ld-linux-x86-64.so.2
-
-mount --bind /bus1/data sysroot/var
-
-mount --move /dev sysroot/dev
-mount --move /sys sysroot/sys
-mount --move /run sysroot/run
-mount --move /proc sysroot/proc
-
-exec chroot sysroot /usr/bin/setsid -c /usr/bin/bash -i
-EOF
-
-chmod 0755 $ROOT/init
+copy ../init/org.bus1.devices $ROOT/usr/bin
+copy_libs ../init/org.bus1.devices
 
 # ------------------------------------------------------------------------------
 # resolve and install needed libraries
@@ -113,20 +102,16 @@ copy sysroot/lib64/ld-linux-x86-64.so.2 $ROOT/usr/lib/x86_64-linux-gnu
 
 for i in $BINARIES; do
   copy sysroot/usr/bin/$i $ROOT/usr/bin
-
-  chroot sysroot ldd /usr/bin/$i | ( while read line || [[ -n "$line" ]]; do
-    set -- $line
-    while (( $# > 0 )); do
-      a=$1
-      shift
-      [[ $a == '=>' ]] || continue
-      break
-    done
-    [[ -z $1 ]] || copy sysroot/$1 $ROOT/usr/lib/x86_64-linux-gnu
-  done )
+  copy_libs /usr/bin/$i sysroot
 done
 
 ldconfig -r $ROOT
+
+# ------------------------------------------------------------------------------
+for i in $DIRECTORIES; do
+  mkdir -p $ROOT/$i
+  cp -ax $i/* $ROOT/$i
+done
 
 # ------------------------------------------------------------------------------
 for i in $MODULES; do
