@@ -18,7 +18,7 @@ lrwxrwxrwx  1 0 0    7 Nov 28 12:57 bin -> usr/bin
 drwxr-xr-x  4 0 0   56 Nov 28 13:15 bus1
 drwxr-xr-x  8 0 0 2820 Nov 28 13:14 dev
 drwxr-xr-x  3 0 0  100 Nov 28 12:57 etc
-lrwxrwxrwx  1 0 0   21 Nov 28 12:57 init -> usr/bin/org.bus1.init
+lrwxrwxrwx  1 0 0   21 Nov 28 12:57 init -> usr/bin/org.bus1.rdinit
 drwxr-xr-x  3 0 0   60 Nov 28 12:57 lib
 drwxr-xr-x  2 0 0   60 Nov 28 12:57 lib64
 dr-xr-xr-x 69 0 0    0 Nov 28 13:14 proc

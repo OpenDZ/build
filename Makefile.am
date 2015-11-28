@@ -19,7 +19,7 @@ system.img:
 	src/install-$$(. /etc/os-release; echo $$ID).sh
 .DELETE_ON_ERROR: system.img
 
-initrd: src/build-initrd.sh ../init/org.bus1.init ../init/org.bus1.devices
+initrd: src/build-initrd.sh ../init/org.bus1.rdinit ../init/org.bus1.devices
 	src/build-initrd.sh
 .DELETE_ON_ERROR: initrd
 

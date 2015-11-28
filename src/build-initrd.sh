@@ -89,9 +89,9 @@ echo "/usr/lib/x86_64-linux-gnu" > $ROOT/etc/ld.so.conf.d/x86_64-linux-gnu.conf
 
 # ------------------------------------------------------------------------------
 # the kernel executes /init
-copy ../init/org.bus1.init $ROOT/usr/bin
-copy_libs ../init/org.bus1.init
-ln -s usr/bin/org.bus1.init $ROOT/init
+copy ../init/org.bus1.rdinit $ROOT/usr/bin
+copy_libs ../init/org.bus1.rdinit
+ln -s usr/bin/org.bus1.rdinit $ROOT/init
 
 copy ../init/org.bus1.devices $ROOT/usr/bin
 copy_libs ../init/org.bus1.devices
