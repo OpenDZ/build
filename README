@@ -1,53 +1,49 @@
-[kay@ank build]$ sudo ./install-fedora.sh 
-Fedora rawhide - x86_64                                                                                               5.4 MB/s |  44 MB     00:08    
+[kay@ank build]$ sudo make
+src/install-$(. /etc/os-release; echo $ID).sh
+Fedora rawhide - x86_64                                                                                                                                                            3.3 MB/s |  45 MB     00:13    
+[...]
+Install  105 Packages
+Total download size: 62 M
+Installed size: 284 M
 [...]
 Creating 4.0 filesystem on system.img, block size 131072.
-
-[kay@ank build]$ ls -lh system.img 
--rw-r--r-- 1 root root 92M Nov 23 22:47 system.img
-
-[kay@ank build]$ sudo ./test-init.sh 
-+ set -e
-+ test -z ''
-+ exec unshare -m ./test-init.sh init
-+ set -e
-+ test -z init
-+ mkdir -p sysroot
-+ mount -t tmpfs tmpfs sysroot
-+ mkdir -p sysroot/usr
-+ mount -tsquashfs system.img sysroot/usr
-+ mount -o remount,ro,bind sysroot/usr sysroot/usr
-+ ln -s usr/bin sysroot/bin
-+ ln -s usr/etc sysroot/etc
-+ mkdir -p sysroot/lib64
-+ ln -s ../usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 sysroot/lib64/ld-linux-x86-64.so.2
-+ mkdir -p Data/var sysroot/var
-+ mount --bind Data/var sysroot/var
-+ mkdir -p sysroot/proc sysroot/sys sysroot/dev
-+ mount -t proc proc sysroot/proc
-+ mount -t sysfs sysfs sysroot/sys
-+ mount -t devtmpfs devtmpfs sysroot/dev
-+ exec chroot sysroot bash
-bash-4.3# 
-bash-4.3# mount
-tmpfs on / type tmpfs (rw,relatime)
-/home/kay/src/bus1/build/system.img on /usr type squashfs (ro,relatime)
-/dev/sda5 on /var type btrfs (rw,relatime,ssd,space_cache,subvolid=5,subvol=/kay/src/bus1/build/Data/var)
-proc on /proc type proc (rw,relatime)
-sysfs on /sys type sysfs (rw,relatime)
-devtmpfs on /dev type devtmpfs (rw,relatime,size=4020392k,nr_inodes=1005098,mode=755)
-bash-4.3# 
-
-[kay@ank build]$ sudo ./build-initrd.sh t
-/tmp/initrd-tmp0EA
-├── bin -> usr/bin
-├── etc
-│   ├── ld.so.cache
-│   ├── ld.so.conf
-│   └── ld.so.conf.d
-│       └── x86_64-linux-gnu.conf
 [...]
-31 directories, 65 files
+src/build-initrd.sh
+  GEN      efi-disk.img
+/usr/bin/qemu-system-x86_64 -machine accel=kvm -m 1024 -bios /usr/share/qemu/bios-ovmf.bin -snapshot efi-disk.img
 
-[kay@ank build]$ ls -lh initrd 
--rw-r--r-- 1 root root 3.1M Nov 23 22:51 initrd
+bash-4.3# ls -l /
+total 0
+lrwxrwxrwx  1 0 0    7 Nov 28 12:57 bin -> usr/bin
+drwxr-xr-x  4 0 0   56 Nov 28 13:15 bus1
+drwxr-xr-x  8 0 0 2820 Nov 28 13:14 dev
+drwxr-xr-x  3 0 0  100 Nov 28 12:57 etc
+lrwxrwxrwx  1 0 0   21 Nov 28 12:57 init -> usr/bin/org.bus1.init
+drwxr-xr-x  3 0 0   60 Nov 28 12:57 lib
+drwxr-xr-x  2 0 0   60 Nov 28 12:57 lib64
+dr-xr-xr-x 69 0 0    0 Nov 28 13:14 proc
+drwx------  2 0 0   40 Nov 24 17:57 root
+lrwxrwxrwx  1 0 0    7 Nov 28 12:57 sbin -> usr/bin
+dr-xr-xr-x 13 0 0    0 Nov 28 13:14 sys
+drwxr-xr-x  7 0 0  200 Nov 28 13:14 sysroot
+drwxr-xr-x  5 0 0  100 Nov 28 12:57 usr
+
+bash-4.3# mount
+rootfs on / type rootfs (rw,size=486408k,nr_inodes=121602)
+proc on /proc type proc (rw,nosuid,nodev,noexec,relatime)
+sysfs on /sys type sysfs (rw,nosuid,nodev,noexec,relatime)
+devtmpfs on /dev type devtmpfs (rw,nosuid,size=502960k,nr_inodes=125740,mode=755)
+devpts on /dev/pts type devpts (rw,nosuid,noexec,relatime,mode=620,ptmxmode=000)
+/dev/sda2 on /bus1 type xfs (rw,relatime,attr2,inode64,noquota)
+
+bash-4.3# ps afx
+  PID TTY      STAT   TIME COMMAND
+    2 ?        S      0:00 [kthreadd]
+    3 ?        S      0:00  \_ [ksoftirqd/0]
+[...]
+    1 ?        Ss     0:00 /init
+   97 ?        Ss     0:00 /usr/bin/org.bus1.devices
+   98 tty1     Ss     0:00 /bin/bash
+  149 tty1     R+     0:00  \_ ps afx
+
+bash-4.3# 
