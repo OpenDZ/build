@@ -10,40 +10,42 @@ Creating 4.0 filesystem on system.img, block size 131072.
 [...]
 src/build-initrd.sh
   GEN      efi-disk.img
-/usr/bin/qemu-system-x86_64 -machine accel=kvm -m 1024 -bios /usr/share/qemu/bios-ovmf.bin -snapshot efi-disk.img
+0 bytes (0 B) copied, 8.9247e-05 s, 0.0 kB/s
+mkfs.fat 3.0.28 (2015-05-16)
+/usr/bin/qemu-system-x86_64 -machine accel=kvm -m 1024 -bios /usr/share/qemu/bios-ovmf.bin -drive format=raw,file=efi-disk.img
 
 bash-4.3# ls -l /
-total 0
-lrwxrwxrwx  1 0 0    7 Nov 28 12:57 bin -> usr/bin
-drwxr-xr-x  4 0 0   56 Nov 28 13:15 bus1
-drwxr-xr-x  8 0 0 2820 Nov 28 13:14 dev
-drwxr-xr-x  3 0 0  100 Nov 28 12:57 etc
-lrwxrwxrwx  1 0 0   21 Nov 28 12:57 init -> usr/bin/org.bus1.rdinit
-drwxr-xr-x  3 0 0   60 Nov 28 12:57 lib
-drwxr-xr-x  2 0 0   60 Nov 28 12:57 lib64
-dr-xr-xr-x 69 0 0    0 Nov 28 13:14 proc
-drwx------  2 0 0   40 Nov 24 17:57 root
-lrwxrwxrwx  1 0 0    7 Nov 28 12:57 sbin -> usr/bin
-dr-xr-xr-x 13 0 0    0 Nov 28 13:14 sys
-drwxr-xr-x  7 0 0  200 Nov 28 13:14 sysroot
-drwxr-xr-x  5 0 0  100 Nov 28 12:57 usr
+lrwxrwxrwx  1 root root    7 Nov 29 14:26 bin -> usr/bin
+drwxr-xr-x  4 root root   32 Nov 29 14:26 bus1
+drwxr-xr-x  8 root root 2840 Nov 29 14:26 dev
+lrwxrwxrwx  1 root root    7 Nov 29 14:26 etc -> usr/etc
+drwxr-xr-x  2 root root   60 Nov 29 14:26 lib64
+dr-xr-xr-x 70 root root    0 Nov 29 14:26 proc
+lrwxrwxrwx  1 root root    7 Nov 29 14:26 sbin -> usr/bin
+dr-xr-xr-x 13 root root    0 Nov 29 14:26 sys
+drwxr-xr-x  9 root root  150 Nov 28 12:54 usr
+lrwxrwxrwx  1 root root    9 Nov 29 14:26 var -> bus1/data
+
+bash-4.3# df -kh
+Filesystem      Size  Used Avail Use% Mounted on
+-               475M  2.9M  473M   1% /
+devtmpfs        492M     0  492M   0% /dev
+/dev/sda2       508M  206M  302M  41% /bus1
+/dev/loop0      180M  180M     0 100% /usr
 
 bash-4.3# mount
-rootfs on / type rootfs (rw,size=486408k,nr_inodes=121602)
 proc on /proc type proc (rw,nosuid,nodev,noexec,relatime)
 sysfs on /sys type sysfs (rw,nosuid,nodev,noexec,relatime)
-devtmpfs on /dev type devtmpfs (rw,nosuid,size=502960k,nr_inodes=125740,mode=755)
+devtmpfs on /dev type devtmpfs (rw,nosuid,size=502936k,nr_inodes=125734,mode=755)
 devpts on /dev/pts type devpts (rw,nosuid,noexec,relatime,mode=620,ptmxmode=000)
 /dev/sda2 on /bus1 type xfs (rw,relatime,attr2,inode64,noquota)
+/dev/loop0 on /usr type squashfs (ro,relatime)
 
 bash-4.3# ps afx
   PID TTY      STAT   TIME COMMAND
     2 ?        S      0:00 [kthreadd]
     3 ?        S      0:00  \_ [ksoftirqd/0]
 [...]
-    1 ?        Ss     0:00 /init
-   97 ?        Ss     0:00 /usr/bin/org.bus1.devices
-   98 tty1     Ss     0:00 /bin/bash
-  149 tty1     R+     0:00  \_ ps afx
-
-bash-4.3# 
+  146 ?        S<     0:00  \_ [loop0]
+    1 tty1     Ss     0:00 /usr/bin/bash
+  148 tty1     R+     0:00 ps afx
