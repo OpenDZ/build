@@ -32,5 +32,5 @@ efi-disk.img: $(stub) src/build-efi-disk.sh ../boot-efi/bootx64.efi system.img i
 .DELETE_ON_ERROR: efi-disk.img
 
 test-efi: efi-disk.img
-	$(QEMU) -machine accel=kvm -m 1024 -bios $(QEMU_BIOS) efi-disk.img
+	$(QEMU) -machine accel=kvm -m 1024 -bios $(QEMU_BIOS) -drive format=raw,file=efi-disk.img
 .PHONY: test-efi
