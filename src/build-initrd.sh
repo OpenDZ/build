@@ -19,6 +19,7 @@ BINARIES="\
   lsmod \
   chroot \
   strace \
+  df \
   losetup \
   mount"
 
@@ -36,7 +37,7 @@ copy() {
   local from=$1
   local to=$2
 
-  mkdir -p "$to"
+  mkdir -p $(dirname "$to")
   cp --no-dereference --no-clobber "$from" "$to"
   test -L "$from" && cp --no-clobber $(readlink -f "$from") "$to"
   return 0
