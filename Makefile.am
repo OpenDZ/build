@@ -15,11 +15,18 @@ CLEANFILES += \
 
 all: test-efi
 
-system.img:
+system:
 	src/install-$$(. /etc/os-release; echo $$ID).sh
+
+system.img: system ../init/org.bus1.rdinit ../init/org.bus1.init ../init/org.bus1.devices
+	cp ../init/org.bus1.rdinit system/bin
+	cp ../init/org.bus1.init system/bin
+	cp ../init/org.bus1.devices system/bin
+	rm -f system.img
+	mksquashfs system system.img
 .DELETE_ON_ERROR: system.img
 
-initrd: src/build-initrd.sh ../init/org.bus1.rdinit ../init/org.bus1.devices
+initrd: system.img src/build-initrd.sh ../init/org.bus1.rdinit ../init/org.bus1.devices
 	src/build-initrd.sh
 .DELETE_ON_ERROR: initrd
 

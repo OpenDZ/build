@@ -10,7 +10,11 @@ Creating 4.0 filesystem on system.img, block size 131072.
 [...]
 src/build-initrd.sh
   GEN      efi-disk.img
-0 bytes (0 B) copied, 8.9247e-05 s, 0.0 kB/s
+Disk efi-disk.img: 1 GiB, 1073741824 bytes, 2097152 sectors
+>>> Created a new GPT disklabel (GUID: 4830DA7F-B777-49E4-B26D-874331FEEC4D).
+  Device          Start     End Sectors  Size Type
+  efi-disk.img1    2048 1048575 1046528  511M EFI System
+  efi-disk.img2 1048576 2095103 1046528  511M unknown
 mkfs.fat 3.0.28 (2015-05-16)
 /usr/bin/qemu-system-x86_64 -machine accel=kvm -m 1024 -bios /usr/share/qemu/bios-ovmf.bin -drive format=raw,file=efi-disk.img
 
@@ -47,5 +51,7 @@ bash-4.3# ps afx
     3 ?        S      0:00  \_ [ksoftirqd/0]
 [...]
   146 ?        S<     0:00  \_ [loop0]
-    1 tty1     Ss     0:00 /usr/bin/bash
-  148 tty1     R+     0:00 ps afx
+    1 ?        Ss     0:00 /usr/bin/org.bus1.init
+  148 ?        Ss     0:00 /usr/bin/org.bus1.devices
+  149 tty1     Ss     0:00 /usr/bin/bash
+  198 tty1     R+     0:00  \_ ps afx
