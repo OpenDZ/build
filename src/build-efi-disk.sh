@@ -7,17 +7,18 @@ ROOT=$(mktemp -d /tmp/efi-tmpXXX)
 
 # create GPT table with EFI System Partition
 rm -f efi-disk.img
-dd if=/dev/null of=efi-disk.img bs=1M seek=1024 count=1
-parted --script efi-disk.img \
-  "mklabel gpt" \
-  "mkpart ESP fat32 1MiB 511MiB" \
-  "set 1 boot on" \
-  "mkpart bus1 ext4 512MiB 1023MiB"
+dd if=/dev/null of=efi-disk.img bs=1MiB seek=1024 count=1
+
+sfdisk efi-disk.img << EOF
+label: gpt
+start=1MiB, size=511MiB, type=c12a7328-f81f-11d2-ba4b-00a0c93ec93b, name="ESP"
+            size=512MiB, type=e0243462-d2d0-4c3b-ad28-b365f2da3b4d, name="bus1"
+EOF
 
 LOOP=$(losetup --show -f -P efi-disk.img)
 # ------------------------------------------------------------------------------
 # ESP
-mkfs.vfat -F32 ${LOOP}p1
+mkfs.vfat -n ESP -F 32 ${LOOP}p1
 mkdir $ROOT/boot
 mount ${LOOP}p1 $ROOT/boot
 
@@ -46,7 +47,7 @@ umount $ROOT/boot
 # ------------------------------------------------------------------------------
 # System
 mkdir $ROOT/system
-mkfs.xfs -q ${LOOP}p2
+mkfs.xfs -L bus1 -q ${LOOP}p2
 mount ${LOOP}p2 $ROOT/system
 
 mkdir -p $ROOT/system/{system,data}
