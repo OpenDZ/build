@@ -25,6 +25,8 @@ system/usr/bin/bus1ctl: system ../libbus1/bus1ctl
 	make install -C ../libbus1 DESTDIR=$$PWD/system
 
 system.img: system/usr/bin/org.bus1.init system/usr/bin/bus1ctl
+	rm -rf system/usr/include
+	find system/usr -type f -name "*.la" -delete
 	rm -f system.img
 	mksquashfs system/usr system.img
 .DELETE_ON_ERROR: system.img
