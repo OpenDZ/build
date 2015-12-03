@@ -36,19 +36,19 @@ ln -s lib/x86_64-linux-gnu $ROOT/usr/lib64
 $ROOT/usr/sbin/ldconfig -r $ROOT
 
 # copy usr (without the packages the kernel package pulls in)
-cp -ax $ROOT/usr/* $SYSTEM
-rm -f $SYSTEM/lib64
+cp -ax $ROOT/usr $SYSTEM
+rm -f $SYSTEM/usr/lib64
 
 # copy etc into usr
-cp -ax $ROOT/etc $SYSTEM
+cp -ax $ROOT/etc $SYSTEM/usr
 
 # merge sbin into bin
-mv --no-clobber $SYSTEM/sbin/* $SYSTEM/bin
-rm -rf $SYSTEM/sbin
-ln -s bin $SYSTEM/sbin
+mv --no-clobber $SYSTEM/usr/sbin/* $SYSTEM/usr/bin
+rm -rf $SYSTEM/usr/sbin
+ln -s bin $SYSTEM/usr/sbin
 
 # delete cruft
-rm -rf $SYSTEM/{tmp,games,local}
+rm -rf $SYSTEM/usr/{tmp,games,local}
 
 # ------------------------------------------------------------------------------
 # install kernel
@@ -60,8 +60,8 @@ dnf -y --nogpg \
   kernel
 
 # copy kernel and firmware to usr
-mv $ROOT/usr/lib/modules $SYSTEM/lib
-mv $ROOT/usr/lib/firmware $SYSTEM/lib
+mv $ROOT/usr/lib/modules $SYSTEM/usr/lib
+mv $ROOT/usr/lib/firmware $SYSTEM/usr/lib
 
 # ------------------------------------------------------------------------------
 for i in dev sys run proc; do

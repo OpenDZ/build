@@ -23,7 +23,8 @@ system.img: system ../init/org.bus1.rdinit ../init/org.bus1.init ../init/org.bus
 	cp ../init/org.bus1.init system/bin
 	cp ../init/org.bus1.devices system/bin
 	rm -f system.img
-	mksquashfs system system.img
+	make install -C ../libbus1 DESTDIR=$$PWD/system
+	mksquashfs system/usr system.img
 .DELETE_ON_ERROR: system.img
 
 initrd: system.img src/build-initrd.sh ../init/org.bus1.rdinit ../init/org.bus1.devices
