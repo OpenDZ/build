@@ -5,6 +5,9 @@ test "$UID" == "0" || exit 1
 
 # ------------------------------------------------------------------------------
 BINARIES="\
+  org.bus1.rdinit \
+  org.bus1.devices \
+  org.bus1.init \
   bash \
   sh \
   ls \
@@ -90,12 +93,7 @@ echo "/usr/lib/x86_64-linux-gnu" > $ROOT/etc/ld.so.conf.d/x86_64-linux-gnu.conf
 
 # ------------------------------------------------------------------------------
 # the kernel executes /init
-copy ../init/org.bus1.rdinit $ROOT/usr/bin
-copy_libs ../init/org.bus1.rdinit
 ln -s usr/bin/org.bus1.rdinit $ROOT/init
-
-copy ../init/org.bus1.devices $ROOT/usr/bin
-copy_libs ../init/org.bus1.devices
 
 # ------------------------------------------------------------------------------
 # resolve and install needed libraries
