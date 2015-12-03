@@ -18,12 +18,14 @@ all: test-efi
 system:
 	src/install-$$(. /etc/os-release; echo $$ID).sh
 
-system.img: system ../init/org.bus1.rdinit ../init/org.bus1.init ../init/org.bus1.devices
-	cp ../init/org.bus1.rdinit system/bin
-	cp ../init/org.bus1.init system/bin
-	cp ../init/org.bus1.devices system/bin
-	rm -f system.img
+system/usr/bin/org.bus1.init: system ../init/org.bus1.init
+	make install -C ../init DESTDIR=$$PWD/system
+
+system/usr/bin/bus1ctl: system ../libbus1/bus1ctl
 	make install -C ../libbus1 DESTDIR=$$PWD/system
+
+system.img: system/usr/bin/org.bus1.init system/usr/bin/bus1ctl
+	rm -f system.img
 	mksquashfs system/usr system.img
 .DELETE_ON_ERROR: system.img
 
