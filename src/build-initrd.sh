@@ -74,6 +74,7 @@ mkdir -p sysroot/usr
 mount -tsquashfs system.img sysroot/usr
 ln -s usr/bin sysroot/bin
 ln -s usr/etc sysroot/etc
+ln -s usr/lib sysroot/lib
 mkdir -p sysroot/lib64
 ln -s ../usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 sysroot/lib64/ld-linux-x86-64.so.2
 
@@ -83,6 +84,7 @@ ROOT=$(mktemp -d /tmp/initrd-tmpXXX)
 mkdir -p $ROOT/usr/bin
 ln -s usr/bin $ROOT/bin
 ln -s usr/bin $ROOT/sbin
+ln -s usr/lib $ROOT/lib
 mkdir -p $ROOT/usr/lib/x86_64-linux-gnu
 mkdir -p $ROOT/lib64
 ln -s ../usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 $ROOT/lib64/ld-linux-x86-64.so.2
@@ -90,6 +92,9 @@ ln -s ../usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 $ROOT/lib64/ld-linux-x86-
 mkdir -p $ROOT/etc/ld.so.conf.d/
 echo "include ld.so.conf.d/*.conf" > $ROOT/etc/ld.so.conf
 echo "/usr/lib/x86_64-linux-gnu" > $ROOT/etc/ld.so.conf.d/x86_64-linux-gnu.conf
+
+cp sysroot/usr/etc/bus1-release $ROOT/etc/bus1-release
+cp sysroot/usr/etc/bus1-release bus1-release
 
 # ------------------------------------------------------------------------------
 # the kernel executes /init
@@ -107,22 +112,28 @@ done
 ldconfig -r $ROOT
 
 # ------------------------------------------------------------------------------
+# copy entire directories
 for i in $DIRECTORIES; do
   mkdir -p $ROOT/$i
-  cp -ax $i/* $ROOT/$i
+  cp -ax $i/* $ROOT$i
 done
 
 # ------------------------------------------------------------------------------
+# copy kernel modules and their dependencies
+KVERSION=$(ls -1 sysroot/usr/lib/modules | tail -1)
+
 for i in $MODULES; do
-  modprobe --show-depends --ignore-install $i | (while read cmd path options || [ -n "$cmd" ]; do
-    copy "$path" "$ROOT$path"
+  chroot sysroot modprobe --set-version=$KVERSION --show-depends --ignore-install $i | (while read cmd path options || [ -n "$cmd" ]; do
+    copy sysroot$path "$ROOT$path"
   done )
 done
 
-copy /lib/modules/$(uname -r)/modules.order $ROOT/lib/modules/$(uname -r)
-copy /lib/modules/$(uname -r)/modules.builtin $ROOT/lib/modules/$(uname -r)
+cp sysroot/lib/modules/$KVERSION/modules.order $ROOT/lib/modules/$KVERSION
+cp sysroot/lib/modules/$KVERSION/modules.builtin $ROOT/lib/modules/$KVERSION
 
-depmod -a -b $ROOT
+depmod -a -b $ROOT $KVERSION
+
+cp sysroot/lib/modules/$KVERSION/vmlinuz linux
 
 # ------------------------------------------------------------------------------
 (cd $ROOT; find . | cpio --quiet -o -H newc | gzip) > initrd
