@@ -39,7 +39,7 @@ test-init: src/test-init.sh
 	src/test-init.sh
 .PHONY: test-init
 
-efi-disk.img: $(stub) src/build-efi-disk.sh ../boot-efi/bootx64.efi system.img initrd
+efi-disk.img: $(stub) src/build-efi-disk.sh ../boot-efi/bootx64.efi ../boot-efi/stubx64.efi system.img initrd
 	$(AM_V_GEN)src/build-efi-disk.sh
 .DELETE_ON_ERROR: efi-disk.img
 
