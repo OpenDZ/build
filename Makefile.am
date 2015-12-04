@@ -23,13 +23,13 @@ system:
 	ln -sf ../var/lib/org.bus1/hostname system/usr/etc/hostname
 	echo bus1-$$(date +%s) > system/usr/etc/bus1-release
 
-system/usr/bin/org.bus1.init: system ../init/org.bus1.init
+system/usr/bin/org.bus1.rdinit: system ../init/org.bus1.rdinit
 	make install -C ../init DESTDIR=$$PWD/system
 
 system/usr/bin/bus1ctl: system ../libbus1/bus1ctl
 	make install -C ../libbus1 DESTDIR=$$PWD/system
 
-system.img: system system/usr/bin/org.bus1.init system/usr/bin/bus1ctl
+system.img: system system/usr/bin/org.bus1.rdinit system/usr/bin/bus1ctl
 	rm -rf system/usr/include
 	find system/usr -type f -name "*.la" -delete
 	rm -f system.img
@@ -40,7 +40,7 @@ initrd: src/build-initrd.sh ../init/org.bus1.rdinit ../init/org.bus1.devices
 	src/build-initrd.sh
 .DELETE_ON_ERROR: initrd
 
-efi-disk.img: $(stub) src/build-efi-disk.sh ../boot-efi/bootx64.efi ../boot-efi/stubx64.efi system.img initrd linux bus1-release
+efi-disk.img: $(stub) src/build-efi-disk.sh ../boot-efi/bootx64.efi ../boot-efi/stubx64.efi system.img initrd linux
 	$(AM_V_GEN)src/build-efi-disk.sh
 .DELETE_ON_ERROR: efi-disk.img
 
