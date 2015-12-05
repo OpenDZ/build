@@ -48,6 +48,13 @@ test-efi: efi-disk.img
 	$(QEMU) -machine accel=kvm -m 1024 -bios $(QEMU_BIOS) -drive format=raw,file=efi-disk.img
 .PHONY: test-efi
 
+update:
+	git pull --rebase
+	(cd ../libbus1 && git pull --rebase && ./autogen.sh b && make)
+	(cd ../init && git pull --rebase && ./autogen.sh b && make)
+	(cd ../boot-efi && git pull --rebase && ./autogen.sh b && make)
+.PHONY: update
+
 test-init: src/test-init.sh
 	src/test-init.sh
 .PHONY: test-init
