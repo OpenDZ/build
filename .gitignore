@@ -25,4 +25,6 @@ Makefile.in
 /stamp-*
 /efi-disk.img
 /initrd
+/linux
+/bus1-release
 /system.img

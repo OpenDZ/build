@@ -24,10 +24,13 @@ BINARIES="\
   strace \
   df \
   losetup \
+  less \
+  grep \
   mount"
 
 MODULES="\
-  xfs
+  usb_storage \
+  xfs \
   squashfs \
   vfat \
   loop"
