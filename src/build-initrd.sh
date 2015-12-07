@@ -8,6 +8,10 @@ BINARIES="\
   org.bus1.rdinit \
   org.bus1.devices \
   org.bus1.init \
+  modprobe"
+
+# only needed for debugging
+BINARIES="$BINARIES \
   bash \
   sh \
   ls \
@@ -18,7 +22,6 @@ BINARIES="\
   top \
   ldd \
   dmesg \
-  modprobe \
   lsmod \
   chroot \
   strace \
