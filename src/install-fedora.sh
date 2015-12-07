@@ -41,6 +41,7 @@ rm -f $SYSTEM/usr/lib64
 
 # copy etc into usr
 cp -ax $ROOT/etc $SYSTEM/usr
+rm -f $SYSTEM/usr/etc/{resolv.conf,machine-id,mtab,hostname,localtime}
 
 # merge sbin into bin
 mv --no-clobber $SYSTEM/usr/sbin/* $SYSTEM/usr/bin

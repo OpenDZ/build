@@ -17,10 +17,6 @@ all: test-efi
 
 system:
 	src/install-$$(. /etc/os-release; echo $$ID).sh
-	rm -f system/usr/etc/mtab
-	ln -sf ../var/lib/org.bus1/machine-id system/usr/etc/machine-id
-	ln -sf ../var/lib/org.bus1/resolv.conf system/usr/etc/resolv.conf
-	ln -sf ../var/lib/org.bus1/hostname system/usr/etc/hostname
 	echo bus1-$$(date +%s) > system/usr/etc/bus1-release
 
 system/usr/bin/org.bus1.rdinit: system ../init/org.bus1.rdinit
