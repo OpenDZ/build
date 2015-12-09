@@ -33,7 +33,7 @@ objcopy \
   --add-section .release=$ROOT/release.txt --change-section-vma .release=0x20000 \
   --add-section .options=$ROOT/options.txt --change-section-vma .options=0x30000 \
   --add-section .splash=../boot-efi/test/bus1.bmp --change-section-vma .splash=0x40000 \
-  --add-section .linux=linux --change-section-vma .linux=0x2000000 \
+  --add-section .linux=vmlinuz --change-section-vma .linux=0x2000000 \
   --add-section .initrd=initrd --change-section-vma .initrd=0x3000000 \
   ../boot-efi/stubx64.efi $ROOT/boot/EFI/bus1/$(cat bus1-release).efi
 

@@ -32,11 +32,12 @@ BINARIES="$BINARIES \
   mount"
 
 MODULES="\
-  usb_storage \
+  bus1 \
   xfs \
   squashfs \
   vfat \
-  loop"
+  loop \
+  usb_storage"
 
 DIRECTORIES="\
   /usr/share/terminfo/l"
@@ -138,8 +139,6 @@ cp sysroot/lib/modules/$KVERSION/modules.order $ROOT/lib/modules/$KVERSION
 cp sysroot/lib/modules/$KVERSION/modules.builtin $ROOT/lib/modules/$KVERSION
 
 depmod -a -b $ROOT $KVERSION
-
-cp sysroot/lib/modules/$KVERSION/vmlinuz linux
 
 # ------------------------------------------------------------------------------
 (cd $ROOT; find . | cpio --quiet -o -H newc | gzip) > initrd

@@ -2,12 +2,10 @@
 
 set -e
 
-test -e System && exit 1
 test "$UID" == "0" || exit 1
 
 # ------------------------------------------------------------------------------
 ROOT=$(mktemp -d /tmp/install-tmpXXX)
-SYSTEM=$(mktemp -d system-tmpXXX)
 
 for i in dev sys run proc; do
     mkdir $ROOT/$i
@@ -36,6 +34,7 @@ ln -s lib/x86_64-linux-gnu $ROOT/usr/lib64
 $ROOT/usr/sbin/ldconfig -r $ROOT
 
 # copy usr (without the packages the kernel package pulls in)
+SYSTEM=$(mktemp -d system-tmpXXX)
 cp -ax $ROOT/usr $SYSTEM
 rm -f $SYSTEM/usr/lib64
 
@@ -49,7 +48,7 @@ rm -rf $SYSTEM/usr/sbin
 ln -s bin $SYSTEM/usr/sbin
 
 # delete cruft
-rm -rf $SYSTEM/usr/{tmp,games,local}
+rm -rf $SYSTEM/usr/{src,tmp,games,local}
 
 # ------------------------------------------------------------------------------
 # install kernel
@@ -58,11 +57,21 @@ dnf -y --nogpg \
   --releasever=rawhide --disablerepo='*' \
   --enablerepo=fedora --enablerepo=fedora-rawhide-kernel-nodebug install \
   --exclude grubby \
-  kernel
+  kernel kernel-devel
 
-# copy kernel and firmware to usr
-mv $ROOT/usr/lib/modules $SYSTEM/usr/lib
-mv $ROOT/usr/lib/firmware $SYSTEM/usr/lib
+KVERSION=$(ls -1 $ROOT/usr/lib/modules | tail -1)
+
+# copy kernel
+mv $ROOT/usr/lib/modules/$KVERSION/vmlinuz vmlinuz
+
+# copy kernel modules and firmware to usr
+mkdir -p $SYSTEM/usr/lib/modules/
+mv $ROOT/usr/lib/modules/$KVERSION $SYSTEM/usr/lib/modules/$KVERSION
+mv $ROOT/usr/lib/firmware $SYSTEM/usr/lib/firmware
+
+# copy kernel headers
+rm -rf kernel-headers
+cp -ax $ROOT/usr/src/kernels/$KVERSION kernel-headers
 
 # ------------------------------------------------------------------------------
 for i in dev sys run proc; do
