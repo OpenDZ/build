@@ -30,13 +30,13 @@ dnf -y --nogpg \
 # move $libdir to multilib tuple dir
 echo "/usr/lib/x86_64-linux-gnu" > $ROOT/etc/ld.so.conf.d/x86_64-linux-gnu.conf
 mv $ROOT/usr/lib64 $ROOT/usr/lib/x86_64-linux-gnu
-ln -s lib/x86_64-linux-gnu $ROOT/usr/lib64
+mkdir -p $ROOT/usr/lib64
+ln -s ../lib/x86_64-linux-gnu/security $ROOT/usr/lib64/security
 $ROOT/usr/sbin/ldconfig -r $ROOT
 
 # copy usr (without the packages the kernel package pulls in)
 SYSTEM=$(mktemp -d system-tmpXXX)
 cp -ax $ROOT/usr $SYSTEM
-rm -f $SYSTEM/usr/lib64
 
 # copy etc into usr
 cp -ax $ROOT/etc $SYSTEM/usr

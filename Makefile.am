@@ -17,9 +17,11 @@ all: test-efi
 
 system vmlinuz kernel-headers:
 	src/install-$$(. /etc/os-release; echo $${ID_LIKE:-$$ID}).sh
+	sed -i 's#root:\*:#root::#' system/usr/etc/shadow
+	sed -i 's#:/root:#:/:#' system/usr/etc/passwd
 	echo bus1-$$(date +%s) > system/usr/lib/bus1-release
 
-system/usr/bin/org.bus1.rdinit: system ../init/org.bus1.rdinit
+system/usr/bin/org.bus1.rdinit: system ../init/org.bus1.rdinit ../init/org.bus1.init ../init/org.bus1.devices
 	make install -C ../init DESTDIR=$$PWD/system
 
 system/usr/bin/bus1ctl: system ../libbus1/bus1ctl
