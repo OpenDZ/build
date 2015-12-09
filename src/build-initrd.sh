@@ -100,8 +100,8 @@ mkdir -p $ROOT/etc/ld.so.conf.d/
 echo "include ld.so.conf.d/*.conf" > $ROOT/etc/ld.so.conf
 echo "/usr/lib/x86_64-linux-gnu" > $ROOT/etc/ld.so.conf.d/x86_64-linux-gnu.conf
 
-cp sysroot/usr/etc/bus1-release $ROOT/etc/bus1-release
-cp sysroot/usr/etc/bus1-release bus1-release
+cp sysroot/usr/lib/bus1-release $ROOT/usr/lib/bus1-release
+cp sysroot/usr/lib/bus1-release bus1-release
 
 # ------------------------------------------------------------------------------
 # the kernel executes /init

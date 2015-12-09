@@ -17,7 +17,7 @@ all: test-efi
 
 system vmlinuz kernel-headers:
 	src/install-$$(. /etc/os-release; echo $${ID_LIKE:-$$ID}).sh
-	echo bus1-$$(date +%s) > system/usr/etc/bus1-release
+	echo bus1-$$(date +%s) > system/usr/lib/bus1-release
 
 system/usr/bin/org.bus1.rdinit: system ../init/org.bus1.rdinit
 	make install -C ../init DESTDIR=$$PWD/system
@@ -29,7 +29,7 @@ system/usr/bin/bus1ctl: system ../libbus1/bus1ctl
 	make -C ../bus1 clean
 	make -C ../bus1 KERNELDIR=../build/kernel-headers
 
-KVERSION := $(shell cat kernel-headers/include/config/kernel.release)
+KVERSION = $(shell cat kernel-headers/include/config/kernel.release)
 system/usr/lib/modules/$(KVERSION)/kernel/ipc/bus1.ko: ../bus1/ipc/bus1/bus1.ko
 	mkdir -p system/usr/lib/modules/$(KVERSION)/kernel/ipc
 	cp ../bus1/ipc/bus1/bus1.ko system/usr/lib/modules/$(KVERSION)/kernel/ipc
