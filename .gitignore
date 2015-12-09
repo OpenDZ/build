@@ -25,6 +25,7 @@ Makefile.in
 /stamp-*
 /efi-disk.img
 /initrd
-/linux
+/vmlinuz
+/kernel-headers
 /bus1-release
 /system.img

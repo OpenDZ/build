@@ -25,15 +25,18 @@ system/usr/bin/org.bus1.rdinit: system ../init/org.bus1.rdinit
 system/usr/bin/bus1ctl: system ../libbus1/bus1ctl
 	make install -C ../libbus1 DESTDIR=$$PWD/system
 
-bus1.ko: system ../bus1/ipc/bus1/bus1.ko
-	make -C ../bus1 clean && make -C ../bus1 KERNELDIR=../build/kernel-headers
-	mkdir -p system/usr/lib/modules/$$(cat kernel-headers/include/config/kernel.release)/kernel/ipc
-	cp ../bus1/ipc/bus1/bus1.ko system/usr/lib/modules/$$(cat kernel-headers/include/config/kernel.release)/kernel/ipc
-	ln -sf usr/lib system/lib
-	depmod -a -b system/ $$(cat kernel-headers/include/config/kernel.release)
-.PHONY: bus1.ko
+../bus1/ipc/bus1/bus1.ko: kernel-headers
+	make -C ../bus1 clean
+	make -C ../bus1 KERNELDIR=../build/kernel-headers
 
-system.img: bus1.ko system system/usr/bin/org.bus1.rdinit system/usr/bin/bus1ctl
+KVERSION := $(shell cat kernel-headers/include/config/kernel.release)
+system/usr/lib/modules/$(KVERSION)/kernel/ipc/bus1.ko: ../bus1/ipc/bus1/bus1.ko
+	mkdir -p system/usr/lib/modules/$(KVERSION)/kernel/ipc
+	cp ../bus1/ipc/bus1/bus1.ko system/usr/lib/modules/$(KVERSION)/kernel/ipc
+	ln -sf usr/lib system/lib
+	depmod -a -b system $(KVERSION)
+
+system.img: system/usr/lib/modules/$(KVERSION)/kernel/ipc/bus1.ko system system/usr/bin/org.bus1.rdinit system/usr/bin/bus1ctl
 	rm -rf system/usr/include
 	find system/usr -type f -name "*.la" -delete
 	rm -f system.img
