@@ -16,7 +16,7 @@ CLEANFILES += \
 all: test-efi
 
 system:
-	src/install-$$(. /etc/os-release; echo $$ID).sh
+	src/install-$$(. /etc/os-release; echo $${ID_LIKE:-$$ID}).sh
 	echo bus1-$$(date +%s) > system/usr/etc/bus1-release
 
 system/usr/bin/org.bus1.rdinit: system ../init/org.bus1.rdinit
