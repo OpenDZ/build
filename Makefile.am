@@ -49,6 +49,7 @@ update:
 	(cd ../libbus1 && git pull --rebase && ./autogen.sh b && make)
 	(cd ../init && git pull --rebase && ./autogen.sh b && make)
 	(cd ../boot-efi && git pull --rebase && ./autogen.sh b && make)
+	(cd ../bus1 && git pull --rebase && make)
 .PHONY: update
 
 test-init: src/test-init.sh
