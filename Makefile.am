@@ -57,6 +57,10 @@ test-efi: efi-disk.img
 	$(QEMU) -machine accel=kvm -m 1024 -bios $(QEMU_BIOS) -drive format=raw,file=efi-disk.img
 .PHONY: test-efi
 
+test-qemu: efi-disk.img
+	$(QEMU) -machine accel=kvm -m 1024 -kernel vmlinuz -initrd initrd -serial stdio -append "root=/dev/sda2 console=ttyS0 console=tty0" -drive format=raw,file=efi-disk.img
+.PHONY: test-qemu
+
 update:
 	git pull --rebase
 	(cd ../libbus1 && git pull --rebase && ./autogen.sh b && make)
