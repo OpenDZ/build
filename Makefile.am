@@ -52,7 +52,7 @@ efi: efi-disk.img
 .PHONY: efi
 
 qemu: efi-disk.img
-	$(QEMU) -machine accel=kvm -m 1024 -kernel vmlinuz -initrd initrd -serial stdio -append "root=/dev/sda2 console=ttyS0 console=tty0" -drive format=raw,file=efi-disk.img
+	$(QEMU) -machine accel=kvm -m 1024 -kernel vmlinuz -initrd initrd -serial stdio -append "quiet root=/dev/sda2 console=ttyS0 console=tty0" -drive format=raw,file=efi-disk.img
 .PHONY: qemu
 
 update:
