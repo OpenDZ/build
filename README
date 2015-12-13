@@ -1,4 +1,24 @@
-[kay@ank build]$ sudo make
+bus1 - System Build
+
+DETAILS:
+        https://github.com/bus1/build
+
+BUG REPORTS:
+        https://github.com/bus1/build/issues
+
+GIT:
+        git@github.com:bus1/build.git
+        https://github.com/bus1/build.git
+
+GITWEB:
+        https://github.com/bus1/build
+
+LICENSE:
+        LGPLv2.1+ (LICENSE.LGPL2.1)
+        See COPYING for details.
+
+Example:
+[kay@ank build]$ sudo make efi
 src/install-$(. /etc/os-release; echo $ID).sh
 Fedora rawhide - x86_64                                                                                                                                                            3.3 MB/s |  45 MB     00:13    
 [...]
@@ -38,20 +58,21 @@ devtmpfs        492M     0  492M   0% /dev
 /dev/loop0      180M  180M     0 100% /usr
 
 bash-4.3# mount
+devtmpfs on /dev type devtmpfs (rw,nosuid,size=504388k,nr_inodes=126097,mode=755)
+devpts on /dev/pts type devpts (rw,nosuid,noexec,relatime,mode=620,ptmxmode=000)
 proc on /proc type proc (rw,nosuid,nodev,noexec,relatime)
 sysfs on /sys type sysfs (rw,nosuid,nodev,noexec,relatime)
-devtmpfs on /dev type devtmpfs (rw,nosuid,size=502936k,nr_inodes=125734,mode=755)
-devpts on /dev/pts type devpts (rw,nosuid,noexec,relatime,mode=620,ptmxmode=000)
+bus1fs on /sys/fs/bus1 type bus1fs (rw,nosuid,noexec,relatime)
 /dev/sda2 on /bus1 type xfs (rw,relatime,attr2,inode64,noquota)
 /dev/loop0 on /usr type squashfs (ro,relatime)
 
 bash-4.3# ps afx
-  PID TTY      STAT   TIME COMMAND
-    2 ?        S      0:00 [kthreadd]
-    3 ?        S      0:00  \_ [ksoftirqd/0]
-[...]
   146 ?        S<     0:00  \_ [loop0]
+  204 ?        S<     0:00  \_ [ttm_swap]
+  206 ?        S      0:00  \_ [kauditd]
     1 ?        Ss     0:00 /usr/bin/org.bus1.init
   148 ?        Ss     0:00 /usr/bin/org.bus1.devices
-  149 tty1     Ss     0:00 /usr/bin/bash
-  198 tty1     R+     0:00  \_ ps afx
+  149 ?        Ss     0:00 login -- root
+  207 tty1     Ss     0:00  \_ -bash
+  225 tty1     R+     0:00      \_ ps afx
+  150 ttyS0    Ss+    0:00 /usr/bin/agetty --nohostname --keep-baud 115200 38400 9600 ttyS0 linux
