@@ -26,6 +26,7 @@ BINARIES="$BINARIES \
   chroot \
   strace \
   df \
+  stat \
   losetup \
   less \
   grep \

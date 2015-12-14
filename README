@@ -38,6 +38,7 @@ Disk efi-disk.img: 1 GiB, 1073741824 bytes, 2097152 sectors
 mkfs.fat 3.0.28 (2015-05-16)
 /usr/bin/qemu-system-x86_64 -machine accel=kvm -m 1024 -bios /usr/share/qemu/bios-ovmf.bin -drive format=raw,file=efi-disk.img
 
+login: root
 bash-4.3# ls -l /
 lrwxrwxrwx  1 root root    7 Nov 29 14:26 bin -> usr/bin
 drwxr-xr-x  4 root root   32 Nov 29 14:26 bus1
@@ -52,8 +53,8 @@ lrwxrwxrwx  1 root root    9 Nov 29 14:26 var -> bus1/data
 
 bash-4.3# df -kh
 Filesystem      Size  Used Avail Use% Mounted on
--               475M  2.9M  473M   1% /
-devtmpfs        492M     0  492M   0% /dev
+-               493M     0  493M   0% /
+devtmpfs        493M     0  493M   0% /dev
 /dev/sda2       508M  206M  302M  41% /bus1
 /dev/loop0      180M  180M     0 100% /usr
 
