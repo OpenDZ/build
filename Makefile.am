@@ -19,8 +19,8 @@ system vmlinuz kernel-headers:
 	sed -i 's#:/root:#:/:#' system/usr/etc/passwd
 	echo bus1-$$(date +%s) > system/usr/lib/bus1-release
 
-system/usr/bin/org.bus1.rdinit: system ../init/org.bus1.rdinit ../init/org.bus1.init ../init/org.bus1.devices
-	make install -C ../init DESTDIR=$$PWD/system
+system/usr/bin/org.bus1.rdinit: system ../base/org.bus1.rdinit ../base/org.bus1.init ../base/org.bus1.devices
+	make install -C ../base DESTDIR=$$PWD/system
 
 system/usr/bin/bus1ctl: system ../libbus1/bus1ctl
 	make install -C ../libbus1 DESTDIR=$$PWD/system
@@ -39,7 +39,7 @@ system.img: system/usr/lib/modules/$(KVERSION)/kernel/ipc/bus1.ko system system/
 	mksquashfs system/usr system.img
 .DELETE_ON_ERROR: system.img
 
-initrd: src/build-initrd.sh ../init/org.bus1.rdinit ../init/org.bus1.devices
+initrd: src/build-initrd.sh ../base/org.bus1.rdinit ../base/org.bus1.devices
 	src/build-initrd.sh
 .DELETE_ON_ERROR: initrd
 
@@ -58,14 +58,14 @@ qemu: efi-disk.img
 update:
 	git pull --rebase
 	(cd ../libbus1 && git pull --rebase)
-	(cd ../init && git pull --rebase)
+	(cd ../base && git pull --rebase)
 	(cd ../boot-efi && git pull --rebase)
 	(cd ../bus1 && git pull --rebase)
 .PHONY: update
 
 build: kernel-headers
 	(cd ../libbus1 && ./autogen.sh b && make clean && make -j8)
-	(cd ../init && ./autogen.sh b && make clean && make -j8)
+	(cd ../base && ./autogen.sh b && make clean && make -j8)
 	(cd ../boot-efi && ./autogen.sh b && make clean && make -j8)
 	(cd ../bus1 && make clean && make b -j8)
 
