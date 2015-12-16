@@ -13,8 +13,9 @@ CLEANFILES += \
   initrd \
   efi-disk.img
 
+# sudo make system D=debian|fedora
 system vmlinuz kernel-headers:
-	src/install-$$(. /etc/os-release; echo $${ID_LIKE:-$$ID}).sh
+	src/install-$${D:-$$(. /etc/os-release; echo $${ID_LIKE:-$$ID})}.sh
 	sed -i 's#root:\*:#root::#' system/usr/etc/shadow
 	sed -i 's#:/root:#:/:#' system/usr/etc/passwd
 	echo bus1-$$(date +%s) > system/usr/lib/bus1-release
@@ -25,7 +26,7 @@ system/usr/bin/org.bus1.rdinit: system ../base/org.bus1.rdinit ../base/org.bus1.
 system/usr/bin/bus1ctl: system ../libbus1/bus1ctl
 	make install -C ../libbus1 DESTDIR=$$PWD/system
 
-KVERSION = $(shell cat kernel-headers/include/config/kernel.release)
+KVERSION = $(shell ls -1 system/usr/lib/modules | tail -1)
 system/usr/lib/modules/$(KVERSION)/kernel/ipc/bus1.ko: kernel-headers ../bus1/ipc/bus1/bus1.ko
 	mkdir -p system/usr/lib/modules/$(KVERSION)/kernel/ipc
 	cp ../bus1/ipc/bus1/bus1.ko system/usr/lib/modules/$(KVERSION)/kernel/ipc

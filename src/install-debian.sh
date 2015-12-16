@@ -2,34 +2,55 @@
 
 set -e
 
-test -e System && exit 1
 test "$UID" == "0" || exit 1
 
 ROOT=$(mktemp -d /tmp/install-tmpXXX)
 
-# move etc into usr
-mkdir -p $ROOT/usr/etc
-ln -s usr/etc $ROOT/etc
-
-# move $libdir to multilib tuple dir
-mkdir -p $ROOT/usr/lib/x86_64-linux-gnu
-ln -s lib/x86_64-linux-gnu $ROOT/usr/lib64
-ln -s usr/lib/x86_64-linux-gnu $ROOT/lib64
-
-debootstrap --variant=minbase sid $ROOT
-
-# merge sbin into bin
-find $ROOT/usr/sbin -type f | xargs mv --no-clobber -t $ROOT/usr/bin
-find $ROOT/sbin -type f | xargs mv --no-clobber -t $ROOT/usr/bin
-find $ROOT/bin -type f | xargs mv --no-clobber -t $ROOT/usr/bin
-rsync -a --ignore-existing $ROOT/lib/ $ROOT/usr/lib/
-
-rm -rf $ROOT/usr/sbin
-ln -s bin $ROOT/usr/sbin
-
-# delete cruft
-rm -rf $ROOT/usr/{tmp,games,local}
+debootstrap --variant=minbase --include=linux-image-amd64,linux-headers-amd64,kmod,strace,less sid $ROOT
 
 # copy usr
-mksquashfs $ROOT/usr system.img
+SYSTEM=$(mktemp -d system-tmpXXX)
+cp -ax $ROOT/usr $SYSTEM
+
+# copy etc into usr
+cp -ax $ROOT/etc $SYSTEM/usr
+rm -f $SYSTEM/usr/etc/{resolv.conf,machine-id,mtab,hostname,localtime}
+
+# merge /bin, /sbin, /usr/sbin into /usr/bin
+mkdir $SYSTEM/usr/bin.new
+find $SYSTEM/usr/bin -type f -print0 | xargs -0 -r cp --no-clobber -t $SYSTEM/usr/bin.new --
+find $SYSTEM/usr/sbin -type f -print0 | xargs -0 -r cp --no-clobber -t $SYSTEM/usr/bin.new --
+find $ROOT/sbin -type f -print0 | xargs -0 -r cp --no-clobber -t $SYSTEM/usr/bin.new --
+find $ROOT/bin -type f -print0 | xargs -0 -r cp --no-clobber -t $SYSTEM/usr/bin.new --
+# symlinks
+rsync -a --ignore-existing $SYSTEM/usr/bin/ $SYSTEM/usr/bin.new/
+rsync -a --ignore-existing $SYSTEM/usr/sbin/ $SYSTEM/usr/bin.new/
+rsync -a --ignore-existing $ROOT/sbin/ $SYSTEM/usr/bin.new/
+rsync -a --ignore-existing $ROOT/bin/ $SYSTEM/usr/bin.new/
+rm -rf $SYSTEM/usr/bin
+mv $SYSTEM/usr/bin.new $SYSTEM/usr/bin
+rm -rf $SYSTEM/usr/sbin
+ln -s bin $SYSTEM/usr/sbin
+
+# merge lib into /usr/lib
+rsync -a --ignore-existing $ROOT/lib/ $SYSTEM/usr/lib/
+
+rsync -a $SYSTEM/usr/lib/terminfo/ $SYSTEM/usr/share/terminfo/
+rm -rf $SYSTEM/usr/lib/terminfo/
+
+KVERSION=$(ls -1 $ROOT/lib/modules | tail -1)
+
+# copy kernel
+cp $ROOT/boot/vmlinuz-$KVERSION vmlinuz
+
+# copy kernel headers
+rm -rf kernel-headers
+cp -ax --dereference $ROOT/usr/src/linux-headers-$KVERSION kernel-headers
+rsync -a --exclude scripts $ROOT/usr/src/linux-headers-${KVERSION%-*}-common/ kernel-headers/
+
+# delete cruft
+rm -rf $SYSTEM/usr/{tmp,games,local}
+
 rm -rf $ROOT
+rm -rf system
+mv $SYSTEM system

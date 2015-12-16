@@ -38,6 +38,9 @@ MODULES="\
   squashfs \
   vfat \
   loop \
+  crc32c_generic \
+  sd_mod \
+  ata-piix \
   usb_storage"
 
 DIRECTORIES="\
@@ -45,24 +48,22 @@ DIRECTORIES="\
 
 # ------------------------------------------------------------------------------
 copy() {
-  local from=$1
-  local to=$2
+  local root=$1
+  local from=$2
+  local to=$3
 
   mkdir -p $(dirname "$to")
-  cp --no-dereference --no-clobber "$from" "$to"
-  test -L "$from" && cp --no-clobber $(readlink -f "$from") "$to"
+  cp --no-dereference --no-clobber "$root$from" "$to"
+  [[ -L "$root$from" ]] && cp --no-clobber $root$(chroot "$root" readlink -e "$from") "$to"
   return 0
 }
 
 copy_libs() {
-  local binary=$1
-  local root=$2
+  local root=$1
+  local binary=$2
+  local to=$3
 
-  ( if [[ -n "$root" ]]; then
-    chroot "$root" ldd "$binary"
-  else
-    ldd "$binary"
-  fi ) | ( while read line || [[ -n "$line" ]]; do
+  (chroot "$root" ldd "$binary") | ( while read line || [[ -n "$line" ]]; do
     set -- $line
     while (( $# > 0 )); do
       a=$1
@@ -70,7 +71,7 @@ copy_libs() {
       [[ $a == '=>' ]] || continue
       break
     done
-    [[ -z $1 ]] || copy "$root/$1" $ROOT/usr/lib/x86_64-linux-gnu
+    [[ -z $1 ]] || copy "$root" "$1" "$to"
   done )
 }
 
@@ -110,11 +111,11 @@ ln -s usr/bin/org.bus1.rdinit $ROOT/init
 
 # ------------------------------------------------------------------------------
 # resolve and install needed libraries
-copy sysroot/lib64/ld-linux-x86-64.so.2 $ROOT/usr/lib/x86_64-linux-gnu
+copy sysroot /lib64/ld-linux-x86-64.so.2 $ROOT/usr/lib/x86_64-linux-gnu
 
 for i in $BINARIES; do
-  copy sysroot/usr/bin/$i $ROOT/usr/bin
-  copy_libs /usr/bin/$i sysroot
+  copy sysroot /usr/bin/$i $ROOT/usr/bin
+  copy_libs sysroot /usr/bin/$i $ROOT/usr/lib/x86_64-linux-gnu
 done
 
 ldconfig -r $ROOT
@@ -123,7 +124,7 @@ ldconfig -r $ROOT
 # copy entire directories
 for i in $DIRECTORIES; do
   mkdir -p $ROOT/$i
-  cp -ax $i/* $ROOT$i
+  cp -ax sysroot$i/* $ROOT$i
 done
 
 # ------------------------------------------------------------------------------
@@ -132,7 +133,8 @@ KVERSION=$(ls -1 sysroot/usr/lib/modules | tail -1)
 
 for i in $MODULES; do
   chroot sysroot modprobe --set-version=$KVERSION --show-depends --ignore-install $i | (while read cmd path options || [ -n "$cmd" ]; do
-    copy sysroot$path "$ROOT$path"
+    [[ "$cmd" == 'insmod' ]] || continue
+    copy sysroot "$path" "$ROOT$path"
   done )
 done
 
