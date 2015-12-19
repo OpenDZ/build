@@ -1,9 +1,29 @@
 #!/bin/bash
 
+# This file is part of bus1. See COPYING for details.
+#
+# bus1 is free software; you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as published by
+# the Free Software Foundation; either version 2.1 of the License, or
+# (at your option) any later version.
+#
+# bus1 is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with bus1; If not, see <http://www.gnu.org/licenses/>.
+#
+#
+# Extract binaries, libraries, kernel modules from "system.img"
+# file and and create the initramfs image "initrd".
+
 set -e
 test "$UID" == "0" || exit 1
 
 # ------------------------------------------------------------------------------
+# modprobe is called by the kernel itself
 BINARIES="\
   org.bus1.rdinit \
   org.bus1.activator \
@@ -33,6 +53,7 @@ BINARIES="$BINARIES \
   grep \
   mount"
 
+# xfs needs crc32c which is not pulled-in
 MODULES="\
   bus1 \
   xfs \
@@ -89,6 +110,7 @@ mkdir -p sysroot/lib64
 ln -s ../usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 sysroot/lib64/ld-linux-x86-64.so.2
 
 # ------------------------------------------------------------------------------
+# base filesystem
 ROOT=$(mktemp -d /tmp/initrd-tmpXXX)
 
 mkdir -p $ROOT/usr/bin
@@ -107,10 +129,10 @@ echo "include ld.so.conf.d/*.conf" > $ROOT/usr/etc/ld.so.conf
 echo "/usr/lib/x86_64-linux-gnu" > $ROOT/usr/etc/ld.so.conf.d/x86_64-linux-gnu.conf
 ln -s usr/etc $ROOT/etc
 
+# org.bus1.rdinit uses release string to find the corresponding system.img
 cp sysroot/usr/lib/bus1-release $ROOT/usr/lib/bus1-release
 cp sysroot/usr/lib/bus1-release bus1-release
 
-# ------------------------------------------------------------------------------
 # the kernel executes /init
 ln -s usr/bin/org.bus1.rdinit $ROOT/init
 
