@@ -68,12 +68,13 @@ bus1fs on /sys/fs/bus1 type bus1fs (rw,nosuid,noexec,relatime)
 /dev/loop0 on /usr type squashfs (ro,relatime)
 
 bash-4.3# ps afx
-  146 ?        S<     0:00  \_ [loop0]
-  204 ?        S<     0:00  \_ [ttm_swap]
-  206 ?        S      0:00  \_ [kauditd]
+[...]
+  148 ?        S<     0:00  \_ [loop0]
+  207 ?        S<     0:00  \_ [ttm_swap]
     1 ?        Ss     0:00 /usr/bin/org.bus1.init
-  148 ?        Ss     0:00 /usr/bin/org.bus1.devices
-  149 ?        Ss     0:00 login -- root
-  207 tty1     Ss     0:00  \_ -bash
-  225 tty1     R+     0:00      \_ ps afx
-  150 ttyS0    Ss+    0:00 /usr/bin/agetty --nohostname --keep-baud 115200 38400 9600 ttyS0 linux
+  150 ?        Ss     0:00 /usr/bin/org.bus1.activator
+  153 ?        Ss     0:00  \_ /usr/bin/org.bus1.devices
+  151 ?        Ss     0:00 login -- root
+  210 tty1     Ss     0:00  \_ -bash
+  227 tty1     R+     0:00      \_ ps afx
+  152 ttyS0    Ss+    0:00 /usr/bin/agetty --nohostname --keep-baud 115200 38400 9600 ttyS0 linux

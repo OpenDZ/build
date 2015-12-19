@@ -23,8 +23,8 @@ mkdir -p sysroot/lib64
 ln -s ../usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 sysroot/lib64/ld-linux-x86-64.so.2
 
 # var is persistent
-mkdir -p Data/var sysroot/var
-mount --bind Data/var sysroot/var
+mkdir -p data sysroot/var
+mount --bind data sysroot/var
 
 # kernel API filesystems
 mkdir -p sysroot/{proc,sys,dev}

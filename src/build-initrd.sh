@@ -6,6 +6,7 @@ test "$UID" == "0" || exit 1
 # ------------------------------------------------------------------------------
 BINARIES="\
   org.bus1.rdinit \
+  org.bus1.activator \
   org.bus1.devices \
   org.bus1.init \
   modprobe"
@@ -95,12 +96,16 @@ ln -s usr/bin $ROOT/bin
 ln -s usr/bin $ROOT/sbin
 ln -s usr/lib $ROOT/lib
 mkdir -p $ROOT/usr/lib/x86_64-linux-gnu
-mkdir -p $ROOT/lib64
+mkdir $ROOT/lib64
 ln -s ../usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 $ROOT/lib64/ld-linux-x86-64.so.2
 
-mkdir -p $ROOT/etc/ld.so.conf.d/
-echo "include ld.so.conf.d/*.conf" > $ROOT/etc/ld.so.conf
-echo "/usr/lib/x86_64-linux-gnu" > $ROOT/etc/ld.so.conf.d/x86_64-linux-gnu.conf
+mkdir $ROOT/var
+mkdir -m 01777 $ROOT/tmp
+
+mkdir -p $ROOT/usr/etc/ld.so.conf.d/
+echo "include ld.so.conf.d/*.conf" > $ROOT/usr/etc/ld.so.conf
+echo "/usr/lib/x86_64-linux-gnu" > $ROOT/usr/etc/ld.so.conf.d/x86_64-linux-gnu.conf
+ln -s usr/etc $ROOT/etc
 
 cp sysroot/usr/lib/bus1-release $ROOT/usr/lib/bus1-release
 cp sysroot/usr/lib/bus1-release bus1-release
