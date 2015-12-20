@@ -44,9 +44,9 @@ KVERSION=$(ls -1 $ROOT/lib/modules | tail -1)
 cp $ROOT/boot/vmlinuz-$KVERSION vmlinuz
 
 # copy kernel headers
-rm -rf kernel-headers
-cp -ax --dereference $ROOT/usr/src/linux-headers-$KVERSION kernel-headers
-rsync -a --exclude scripts $ROOT/usr/src/linux-headers-${KVERSION%-*}-common/ kernel-headers/
+rm -rf linux
+cp -ax --dereference $ROOT/usr/src/linux-headers-$KVERSION linux
+rsync -a --exclude scripts $ROOT/usr/src/linux-headers-${KVERSION%-*}-common/ linux/
 
 # delete cruft
 rm -rf $SYSTEM/usr/{tmp,games,local}

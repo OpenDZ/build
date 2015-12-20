@@ -23,7 +23,7 @@
 # - $libdir is https://wiki.debian.org/Multiarch/Tuples
 #
 # The development headers of the installed kernel are stored in
-# "kernel-headers". The kernel image is stored as "vmlinuz".
+# "linux". The kernel image is stored as "vmlinuz".
 
 set -e
 
@@ -95,8 +95,8 @@ mv $ROOT/usr/lib/modules/$KVERSION $SYSTEM/usr/lib/modules/$KVERSION
 mv $ROOT/usr/lib/firmware $SYSTEM/usr/lib/firmware
 
 # copy kernel headers
-rm -rf kernel-headers
-cp -ax $ROOT/usr/src/kernels/$KVERSION kernel-headers
+rm -rf linux
+cp -ax $ROOT/usr/src/kernels/$KVERSION linux
 
 # ------------------------------------------------------------------------------
 for i in dev sys run proc; do

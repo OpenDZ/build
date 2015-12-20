@@ -10,12 +10,22 @@ CLEANFILES =
 # ------------------------------------------------------------------------------
 CLEANFILES += \
   system.img \
+  vmlinuz \
   initrd \
   efi-disk.img
 
-# sudo make system D=debian|fedora
-system vmlinuz kernel-headers:
-	src/install-$${D:-$$(. /etc/os-release; echo $${ID_LIKE:-$$ID})}.sh
+debian:
+	src/install-debian.sh
+.PHONY: debian
+
+fedora:
+	src/install-fedora.sh
+.PHONY: fedora
+
+system:
+	src/install-$$(. /etc/os-release; echo $${ID_LIKE:-$$ID}).sh
+
+system/usr/lib/bus1-release: system
 	sed -i 's#root:\*:#root::#' system/usr/etc/shadow
 	sed -i 's#:/root:#:/:#' system/usr/etc/passwd
 	echo bus1-$$(date +%s) > system/usr/lib/bus1-release
@@ -27,13 +37,13 @@ system/usr/bin/bus1ctl: system ../libbus1/bus1ctl
 	make install -C ../libbus1 DESTDIR=$$PWD/system
 
 KVERSION = $(shell ls -1 system/usr/lib/modules | tail -1)
-system/usr/lib/modules/$(KVERSION)/kernel/ipc/bus1.ko: kernel-headers ../bus1/ipc/bus1/bus1.ko
+system/usr/lib/modules/$(KVERSION)/kernel/ipc/bus1.ko: linux ../bus1/ipc/bus1/bus1.ko
 	mkdir -p system/usr/lib/modules/$(KVERSION)/kernel/ipc
 	cp ../bus1/ipc/bus1/bus1.ko system/usr/lib/modules/$(KVERSION)/kernel/ipc
 	ln -sf usr/lib system/lib
 	depmod -a -b system $(KVERSION)
 
-system.img: system/usr/lib/modules/$(KVERSION)/kernel/ipc/bus1.ko system system/usr/bin/org.bus1.rdinit system/usr/bin/bus1ctl
+system.img: system/usr/lib/bus1-release system/usr/lib/modules/$(KVERSION)/kernel/ipc/bus1.ko system/usr/bin/org.bus1.rdinit system/usr/bin/bus1ctl
 	rm -rf system/usr/include
 	find system/usr -type f -name "*.la" -delete
 	rm -f system.img
@@ -64,7 +74,7 @@ update:
 	(cd ../bus1 && git pull --rebase)
 .PHONY: update
 
-build: kernel-headers
+build: linux
 	(cd ../libbus1 && ./autogen.sh b && make clean && make -j8)
 	(cd ../base && ./autogen.sh b && make clean && make -j8)
 	(cd ../boot-efi && ./autogen.sh b && make clean && make -j8)
