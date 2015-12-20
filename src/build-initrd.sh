@@ -22,6 +22,16 @@
 set -e
 test "$UID" == "0" || exit 1
 
+# https://wiki.debian.org/Multiarch/Tuples
+if [[ "$HOSTTYPE" == "x86_64" ]] ; then
+  DYNLOADER=ld-linux-x86-64.so.2
+  DYNLOADER_ABI_DIR=/lib64
+  ARCHITECTURE_TUPLE=x86_64-linux-gnu
+else
+  echo "Unknown HOSTTYPE"
+  exit 1
+fi
+
 # ------------------------------------------------------------------------------
 # modprobe is called by the kernel itself
 BINARIES="\
@@ -106,8 +116,8 @@ mount -tsquashfs system.img sysroot/usr
 ln -s usr/bin sysroot/bin
 ln -s usr/etc sysroot/etc
 ln -s usr/lib sysroot/lib
-mkdir -p sysroot/lib64
-ln -s ../usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 sysroot/lib64/ld-linux-x86-64.so.2
+mkdir -p sysroot/$DYNLOADER_ABI_DIR
+ln -s ../usr/lib/$ARCHITECTURE_TUPLE/$DYNLOADER sysroot/$DYNLOADER_ABI_DIR/$DYNLOADER
 
 # ------------------------------------------------------------------------------
 # base filesystem
@@ -117,16 +127,16 @@ mkdir -p $ROOT/usr/bin
 ln -s usr/bin $ROOT/bin
 ln -s usr/bin $ROOT/sbin
 ln -s usr/lib $ROOT/lib
-mkdir -p $ROOT/usr/lib/x86_64-linux-gnu
-mkdir $ROOT/lib64
-ln -s ../usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 $ROOT/lib64/ld-linux-x86-64.so.2
+mkdir -p $ROOT/usr/lib/$ARCHITECTURE_TUPLE
+mkdir -p $ROOT/$DYNLOADER_ABI_DIR
+ln -s ../usr/lib/$ARCHITECTURE_TUPLE/$DYNLOADER $ROOT/$DYNLOADER_ABI_DIR/$DYNLOADER
 
 mkdir $ROOT/var
 mkdir -m 01777 $ROOT/tmp
 
 mkdir -p $ROOT/usr/etc/ld.so.conf.d/
 echo "include ld.so.conf.d/*.conf" > $ROOT/usr/etc/ld.so.conf
-echo "/usr/lib/x86_64-linux-gnu" > $ROOT/usr/etc/ld.so.conf.d/x86_64-linux-gnu.conf
+echo "/usr/lib/$ARCHITECTURE_TUPLE" > $ROOT/usr/etc/ld.so.conf.d/$ARCHITECTURE_TUPLE.conf
 ln -s usr/etc $ROOT/etc
 
 # org.bus1.rdinit uses release string to find the corresponding system.img
@@ -138,11 +148,11 @@ ln -s usr/bin/org.bus1.rdinit $ROOT/init
 
 # ------------------------------------------------------------------------------
 # resolve and install needed libraries
-copy sysroot /lib64/ld-linux-x86-64.so.2 $ROOT/usr/lib/x86_64-linux-gnu
+copy sysroot /$DYNLOADER_ABI_DIR/$DYNLOADER $ROOT/usr/lib/$ARCHITECTURE_TUPLE
 
 for i in $BINARIES; do
   copy sysroot /usr/bin/$i $ROOT/usr/bin
-  copy_libs sysroot /usr/bin/$i $ROOT/usr/lib/x86_64-linux-gnu
+  copy_libs sysroot /usr/bin/$i $ROOT/usr/lib/$ARCHITECTURE_TUPLE
 done
 
 ldconfig -r $ROOT
