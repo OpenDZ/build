@@ -44,14 +44,15 @@ mkdir $ROOT/boot
 mount ${LOOP}p1 $ROOT/boot
 
 cp -ax firmware/boot/* $ROOT/boot
+cp initrd $ROOT/boot
 
-cat << EOF > $ROOT/config.txt
+cat << EOF > $ROOT/boot/config.txt
 dtparam=audio=on
 disable_overscan=1
 initramfs initrd followkernel
 EOF
 
-cat << EOF > $ROOT/cmdline.txt
+cat << EOF > $ROOT/boot/cmdline.txt
 dwc_otg.lpm_enable=0 console=ttyAMA0,115200 console=tty1 partition=/dev/mmcblk0p2
 EOF
 
