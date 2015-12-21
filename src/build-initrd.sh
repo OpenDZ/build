@@ -25,8 +25,12 @@ test "$UID" == "0" || exit 1
 # https://wiki.debian.org/Multiarch/Tuples
 if [[ "$HOSTTYPE" == "x86_64" ]] ; then
   DYNLOADER=ld-linux-x86-64.so.2
-  DYNLOADER_ABI_DIR=/lib64
+  DYNLOADER_ABI_DIR=lib64
   ARCHITECTURE_TUPLE=x86_64-linux-gnu
+elif [[ "$HOSTTYPE" == "arm" ]] ; then
+  DYNLOADER=ld-linux-armhf.so.3
+  DYNLOADER_ABI_DIR=lib
+  ARCHITECTURE_TUPLE=arm-linux-gnueabihf
 else
   echo "Unknown HOSTTYPE"
   exit 1
@@ -116,8 +120,10 @@ mount -tsquashfs system.img sysroot/usr
 ln -s usr/bin sysroot/bin
 ln -s usr/etc sysroot/etc
 ln -s usr/lib sysroot/lib
-mkdir -p sysroot/$DYNLOADER_ABI_DIR
-ln -s ../usr/lib/$ARCHITECTURE_TUPLE/$DYNLOADER sysroot/$DYNLOADER_ABI_DIR/$DYNLOADER
+if [[ ! -e sysroot/$DYNLOADER_ABI_DIR/$DYNLOADER ]] ; then
+  mkdir -p sysroot/$DYNLOADER_ABI_DIR
+  ln -s ../usr/lib/$ARCHITECTURE_TUPLE/$DYNLOADER sysroot/$DYNLOADER_ABI_DIR/$DYNLOADER
+fi
 
 # ------------------------------------------------------------------------------
 # base filesystem

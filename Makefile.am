@@ -22,6 +22,10 @@ fedora:
 	src/install-fedora.sh
 .PHONY: fedora
 
+rpi:
+	src/install-raspberrypi.sh
+.PHONY: rpi
+
 system:
 	src/install-$$(. /etc/os-release; echo $${ID_LIKE:-$$ID}).sh
 
@@ -70,8 +74,8 @@ update:
 	git pull --rebase
 	(cd ../libbus1 && git pull --rebase)
 	(cd ../base && git pull --rebase)
-	(cd ../boot-efi && git pull --rebase)
 	(cd ../bus1 && git pull --rebase)
+	(cd ../boot-efi && git pull --rebase)
 .PHONY: update
 
 build: linux
@@ -79,7 +83,3 @@ build: linux
 	(cd ../base && ./autogen.sh b && make clean && make -j8)
 	(cd ../boot-efi && ./autogen.sh b && make clean && make -j8)
 	(cd ../bus1 && make clean && make b -j8)
-
-test-init: src/test-init.sh
-	src/test-init.sh
-.PHONY: test-init
