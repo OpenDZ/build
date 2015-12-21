@@ -54,7 +54,7 @@ system.img: system/usr/lib/bus1-release system/usr/lib/modules/$(KVERSION)/kerne
 	mksquashfs system/usr system.img
 .DELETE_ON_ERROR: system.img
 
-initrd: src/build-initrd.sh ../base/org.bus1.rdinit ../base/org.bus1.devices
+initrd: system.img src/build-initrd.sh ../base/org.bus1.rdinit ../base/org.bus1.devices
 	src/build-initrd.sh
 .DELETE_ON_ERROR: initrd
 
