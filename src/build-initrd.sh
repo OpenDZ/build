@@ -120,7 +120,7 @@ mount -tsquashfs system.img sysroot/usr
 ln -s usr/bin sysroot/bin
 ln -s usr/etc sysroot/etc
 ln -s usr/lib sysroot/lib
-if [[ ! -e sysroot/$DYNLOADER_ABI_DIR/$DYNLOADER ]] ; then
+if [[ "$DYNLOADER_ABI_DIR" != "lib" ]]; then
   mkdir -p sysroot/$DYNLOADER_ABI_DIR
   ln -s ../usr/lib/$ARCHITECTURE_TUPLE/$DYNLOADER sysroot/$DYNLOADER_ABI_DIR/$DYNLOADER
 fi
@@ -134,8 +134,12 @@ ln -s usr/bin $ROOT/bin
 ln -s usr/bin $ROOT/sbin
 ln -s usr/lib $ROOT/lib
 mkdir -p $ROOT/usr/lib/$ARCHITECTURE_TUPLE
-mkdir -p $ROOT/$DYNLOADER_ABI_DIR
-ln -s ../usr/lib/$ARCHITECTURE_TUPLE/$DYNLOADER $ROOT/$DYNLOADER_ABI_DIR/$DYNLOADER
+if [[ "$DYNLOADER_ABI_DIR" != "lib" ]]; then
+  mkdir -p $ROOT/$DYNLOADER_ABI_DIR
+  ln -s ../usr/lib/$ARCHITECTURE_TUPLE/$DYNLOADER $ROOT/$DYNLOADER_ABI_DIR/$DYNLOADER
+else
+  ln -s $ARCHITECTURE_TUPLE/$DYNLOADER $ROOT/usr/lib/$DYNLOADER
+fi
 
 mkdir $ROOT/var
 mkdir -m 01777 $ROOT/tmp
