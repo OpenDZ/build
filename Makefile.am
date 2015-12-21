@@ -85,5 +85,5 @@ update:
 build: linux
 	(cd ../libbus1 && ./autogen.sh b && make clean && make -j8)
 	(cd ../base && ./autogen.sh b && make clean && make -j8)
-	(cd ../boot-efi && ./autogen.sh b && make clean && make -j8)
 	(cd ../bus1 && make clean && make b -j8)
+	(cd ../boot-efi && ./autogen.sh b && make clean && make -j8)
