@@ -62,6 +62,10 @@ efi-disk.img: $(stub) src/build-efi-disk.sh ../boot-efi/bootx64.efi ../boot-efi/
 	$(AM_V_GEN)src/build-efi-disk.sh
 .DELETE_ON_ERROR: efi-disk.img
 
+rpi-disk.img: system.img initrd
+	$(AM_V_GEN)src/build-raspberrypi-disk.sh
+.DELETE_ON_ERROR: rpi-disk.img
+
 efi: efi-disk.img
 	$(QEMU) -machine accel=kvm -m 1024 -bios $(QEMU_BIOS) -drive format=raw,file=efi-disk.img
 .PHONY: efi

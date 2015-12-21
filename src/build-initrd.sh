@@ -71,6 +71,7 @@ BINARIES="$BINARIES \
 MODULES="\
   bus1 \
   xfs \
+  btrfs \
   squashfs \
   vfat \
   loop \
