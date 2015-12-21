@@ -16,7 +16,7 @@
 # along with bus1; If not, see <http://www.gnu.org/licenses/>.
 #
 #
-# Create a bootable disk image "rpi-disk.img".
+# Create a Raspberry Pi 2 bootable disk image "rpi-disk.img".
 
 set -e
 

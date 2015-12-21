@@ -1,9 +1,34 @@
 #!/bin/bash
 
+# This file is part of bus1. See COPYING for details.
+#
+# bus1 is free software; you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as published by
+# the Free Software Foundation; either version 2.1 of the License, or
+# (at your option) any later version.
+#
+# bus1 is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with bus1; If not, see <http://www.gnu.org/licenses/>.
+#
+#
+# Download Debian sid to the "system" directory. The
+# entire system is contained in a single /usr directory:
+# - move /etc to /usr/etc
+# - merge /usr/bin and /usr/sbin
+#
+# The Raspberry Pi 2 kernel sources are stored in "linux". The kernel and boot loader
+# are stored in "firmware".
+
 set -e
 
 test "$UID" == "0" || exit 1
 
+# ------------------------------------------------------------------------------
 ROOT=$(mktemp -d /tmp/install-tmpXXX)
 
 debootstrap --variant=minbase --include=kmod,strace,procps,less,vim sid $ROOT
@@ -38,6 +63,7 @@ rsync -a --ignore-existing $ROOT/lib/ $SYSTEM/usr/lib/
 rsync -a $SYSTEM/usr/lib/terminfo/ $SYSTEM/usr/share/terminfo/
 rm -rf $SYSTEM/usr/lib/terminfo/
 
+# ------------------------------------------------------------------------------
 # download kernel and binaries for /boot
 git clone --depth=1 https://github.com/raspberrypi/firmware.git
 git clone --depth=1 https://github.com/raspberrypi/linux.git
@@ -49,6 +75,7 @@ cp firmware/extra/Module7.symvers linux/Module.symvers
 mkdir -p $SYSTEM/usr/lib/modules
 cp -ax firmware/modules/$(ls -1v firmware/modules/ | tail -1) $SYSTEM/usr/lib/modules
 
+# ------------------------------------------------------------------------------
 # delete cruft
 rm -rf $SYSTEM/usr/{tmp,games,local}
 

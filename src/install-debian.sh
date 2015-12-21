@@ -1,9 +1,34 @@
 #!/bin/bash
 
+# This file is part of bus1. See COPYING for details.
+#
+# bus1 is free software; you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as published by
+# the Free Software Foundation; either version 2.1 of the License, or
+# (at your option) any later version.
+#
+# bus1 is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with bus1; If not, see <http://www.gnu.org/licenses/>.
+#
+#
+# Download Debian sid to the "system" directory. The
+# entire system is contained in a single /usr directory:
+# - move /etc to /usr/etc
+# - merge /usr/bin and /usr/sbin
+#
+# The development headers of the installed kernel are stored in
+# "linux". The kernel image is stored as "vmlinuz".
+
 set -e
 
 test "$UID" == "0" || exit 1
 
+# ------------------------------------------------------------------------------
 ROOT=$(mktemp -d /tmp/install-tmpXXX)
 
 debootstrap --variant=minbase --include=linux-image-amd64,linux-headers-amd64,kmod,strace,less sid $ROOT
@@ -40,6 +65,7 @@ rm -rf $SYSTEM/usr/lib/terminfo/
 
 KVERSION=$(ls -1 $ROOT/lib/modules | tail -1)
 
+# ------------------------------------------------------------------------------
 # copy kernel
 cp $ROOT/boot/vmlinuz-$KVERSION vmlinuz
 
@@ -48,6 +74,7 @@ rm -rf linux
 cp -ax --dereference $ROOT/usr/src/linux-headers-$KVERSION linux
 rsync -a --exclude scripts $ROOT/usr/src/linux-headers-${KVERSION%-*}-common/ linux/
 
+# ------------------------------------------------------------------------------
 # delete cruft
 rm -rf $SYSTEM/usr/{tmp,games,local}
 
