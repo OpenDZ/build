@@ -27,6 +27,7 @@ Makefile.in
 /initrd
 /vmlinuz
 /linux
+/system
 /bus1-release
 /system.img
 /firmware

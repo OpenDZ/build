@@ -1,3 +1,4 @@
+SHELL=bash
 ACLOCAL_AMFLAGS = -I m4 ${ACLOCAL_FLAGS}
 AM_MAKEFLAGS = --no-print-directory
 AUTOMAKE_OPTIONS = color-tests parallel-tests
@@ -29,15 +30,15 @@ rpi:
 system:
 	src/install-$$(. /etc/os-release; echo $${ID_LIKE:-$$ID}).sh
 
-system/usr/lib/bus1-release: system
+system/usr/lib/bus1-release: system/usr/lib/os-release
 	sed -i 's#root:\*:#root::#' system/usr/etc/shadow
 	sed -i 's#:/root:#:/:#' system/usr/etc/passwd
 	echo bus1-$$(date +%s) > system/usr/lib/bus1-release
 
-system/usr/bin/org.bus1.rdinit: system ../base/org.bus1.rdinit ../base/org.bus1.init ../base/org.bus1.devices
+system/usr/bin/org.bus1.rdinit: system/usr/lib/bus1-release ../base/org.bus1.rdinit ../base/org.bus1.init ../base/org.bus1.devices
 	make install -C ../base DESTDIR=$$PWD/system
 
-system/usr/bin/bus1ctl: system ../libbus1/bus1ctl
+system/usr/bin/bus1ctl: system/usr/lib/bus1-release ../libbus1/bus1ctl
 	make install -C ../libbus1 DESTDIR=$$PWD/system
 
 KVERSION = $(shell ls -1 system/usr/lib/modules | tail -1)
@@ -79,11 +80,11 @@ update:
 	(cd ../libbus1 && git pull --rebase)
 	(cd ../base && git pull --rebase)
 	(cd ../bus1 && git pull --rebase)
-	(cd ../boot-efi && git pull --rebase)
+	[[ ! -e ../boot-efi ]] || (cd ../boot-efi && git pull --rebase)
 .PHONY: update
 
 build: linux
 	(cd ../libbus1 && ./autogen.sh b && make clean && make -j8)
 	(cd ../base && ./autogen.sh b && make clean && make -j8)
 	(cd ../bus1 && make clean && make b -j8)
-	(cd ../boot-efi && ./autogen.sh b && make clean && make -j8)
+	[[ ! -e ../boot-efi ]] || (cd ../boot-efi && ./autogen.sh b && make clean && make -j8)

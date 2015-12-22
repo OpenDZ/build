@@ -82,3 +82,4 @@ rm -rf $SYSTEM/usr/{tmp,games,local}
 rm -rf $ROOT
 rm -rf system
 mv $SYSTEM system
+chmod 0755 system
