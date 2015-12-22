@@ -39,8 +39,10 @@ ln -s usr/bin bin
 ln -s usr/etc etc
 
 # x86_64 dynloader ABI
-mkdir -p lib64
-ln -s ../usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 lib64/ld-linux-x86-64.so.2
+if [[ "$HOSTTYPE" == "x86_64" ]] ; then
+  mkdir -p lib64
+  ln -s ../usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 lib64/ld-linux-x86-64.so.2
+fi
 
 # var is persistent
 mkdir -p {../data,var}
