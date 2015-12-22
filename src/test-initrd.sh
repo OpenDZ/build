@@ -16,8 +16,8 @@
 # along with bus1; If not, see <http://www.gnu.org/licenses/>.
 #
 #
-# Setup a mount namespace with a temporary / on tmpfs, mount "systemd.img"
-# at /usr and execute a shell inside that system.
+# Setup a mount namespace with a temporary / on tmpfs, extract "initrd",
+# chroot to it and execute a shell inside that system.
 
 set -x
 set -e
@@ -30,26 +30,13 @@ mkdir -p sysroot
 mount -t tmpfs tmpfs sysroot
 cd sysroot
 
-# usr is read-only
-mkdir -p usr
-mount -tsquashfs ../system.img usr
-
-# top-level symlinks
-ln -s usr/bin bin
-ln -s usr/etc etc
-
-# x86_64 dynloader ABI
-mkdir -p lib64
-ln -s ../usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 lib64/ld-linux-x86-64.so.2
-
-# var is persistent
-mkdir -p {../data,var}
-mount --bind ../data var
+# extract initramfs image to tmpfs
+gzip -d -c < ../initrd | cpio -i
 
 # kernel API filesystems
-mkdir -p {proc,sys,dev}
+mkdir {dev,proc,sys}
+mount -t devtmpfs devtmpfs dev
 mount -t proc proc proc
 mount -t sysfs sysfs sys
-mount -t devtmpfs devtmpfs dev
 
 exec chroot . bash
