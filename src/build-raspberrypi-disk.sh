@@ -53,7 +53,7 @@ initramfs initrd followkernel
 EOF
 
 cat << EOF > $ROOT/boot/cmdline.txt
-dwc_otg.lpm_enable=0 console=ttyAMA0,115200 console=tty1 partition=/dev/mmcblk0p2
+partition=/dev/mmcblk0p2
 EOF
 
 umount $ROOT/boot
