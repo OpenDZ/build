@@ -11,9 +11,9 @@ CLEANFILES =
 # ------------------------------------------------------------------------------
 CLEANFILES += \
   system.img \
-  vmlinuz \
   initrd \
-  efi-disk.img
+  efi-disk.img \
+  rpi-disk.img
 
 debian:
 	src/install-debian.sh
