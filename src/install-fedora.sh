@@ -49,14 +49,15 @@ dnf -y --nogpg \
   procps-ng \
   kmod \
   xfsprogs \
+  btrfs-progs \
+  elfutils-libs \
   less \
   vim
 
 # move $libdir to multilib tuple dir
 echo "/usr/lib/x86_64-linux-gnu" > $ROOT/etc/ld.so.conf.d/x86_64-linux-gnu.conf
 mv $ROOT/usr/lib64 $ROOT/usr/lib/x86_64-linux-gnu
-mkdir -p $ROOT/usr/lib64
-ln -s ../lib/x86_64-linux-gnu/security $ROOT/usr/lib64/security
+ln -s ../lib/x86_64-linux-gnu $ROOT/usr/lib64
 $ROOT/usr/sbin/ldconfig -r $ROOT
 
 # copy usr (without the packages the kernel package pulls in)
