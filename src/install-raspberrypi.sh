@@ -31,7 +31,7 @@ test "$UID" == "0" || exit 1
 # ------------------------------------------------------------------------------
 ROOT=$(mktemp -d /tmp/install-tmpXXX)
 
-debootstrap --variant=minbase --include=kmod,strace,procps,less,vim sid $ROOT
+debootstrap --variant=minbase --include=kmod,strace,procps,less,vim,libdw1,libelf1 sid $ROOT
 
 # copy usr
 SYSTEM=$(mktemp -d system-tmpXXX)
