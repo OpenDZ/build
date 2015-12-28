@@ -23,7 +23,9 @@ set -x
 set -e
 
 # unshare the current directory and re-exec this script
-test -z "$1" && exec unshare -m $0 init
+[[ "$1" != "--init" ]] && exec unshare -m $0 --init "$1"
+
+SYSIMAGE=$(realpath ${2:-system.img})
 
 # root is a tmpfs
 mkdir -p sysroot
@@ -32,7 +34,7 @@ cd sysroot
 
 # usr is read-only
 mkdir -p usr
-mount -tsquashfs ../system.img usr
+mount -tsquashfs "$SYSIMAGE" usr
 
 # top-level symlinks
 ln -s usr/bin bin

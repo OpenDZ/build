@@ -23,7 +23,9 @@ set -x
 set -e
 
 # unshare the current directory and re-exec this script
-test -z "$1" && exec unshare -m $0 init
+[[ "$1" != "--init" ]] && exec unshare -m $0 --init "$1"
+
+INITRD=$(realpath ${2:-initrd})
 
 # root is a tmpfs
 mkdir -p sysroot
@@ -31,7 +33,7 @@ mount -t tmpfs tmpfs sysroot
 cd sysroot
 
 # extract initramfs image to tmpfs
-gzip -d -c < ../initrd | cpio -i
+gzip -d -c < "$INITRD" | cpio -i
 
 # kernel API filesystems
 mkdir {dev,proc,sys}
