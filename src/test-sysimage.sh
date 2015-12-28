@@ -40,9 +40,10 @@ mount -tsquashfs "$SYSIMAGE" usr
 # top-level symlinks
 ln -s usr/bin bin
 ln -s usr/etc etc
+ln -s usr/lib lib
 
 # x86_64 dynloader ABI
-if [[ "$HOSTTYPE" == "x86_64" ]] ; then
+if [[ "$HOSTTYPE" == "x86_64" ]]; then
   mkdir -p lib64
   ln -s ../usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 lib64/ld-linux-x86-64.so.2
 fi
