@@ -29,6 +29,7 @@ SYSIMAGE=$(realpath ${2:-system.img})
 
 # root is a tmpfs
 mkdir -p sysroot
+mount --make-rprivate /
 mount -t tmpfs tmpfs sysroot
 cd sysroot
 

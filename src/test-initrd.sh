@@ -29,6 +29,7 @@ INITRD=$(realpath ${2:-initrd})
 
 # root is a tmpfs
 mkdir -p sysroot
+mount --make-rprivate /
 mount -t tmpfs tmpfs sysroot
 cd sysroot
 
