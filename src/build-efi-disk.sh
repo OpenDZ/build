@@ -58,18 +58,13 @@ objcopy \
   --add-section .initrd=initrd --change-section-vma .initrd=0x3000000 \
   ../boot-efi/stubx64.efi $ROOT/boot/EFI/bus1/$(cat bus1-release).efi
 
+cp system.img $ROOT/boot/EFI/bus1/$(cat bus1-release).img
+
 umount $ROOT/boot
 
 # ------------------------------------------------------------------------------
 # System
-mkdir $ROOT/system
 mkfs.xfs -L bus1 -q ${LOOP}p2
-mount ${LOOP}p2 $ROOT/system
-
-mkdir -p $ROOT/system/{system,data}
-cp system.img $ROOT/system/system/$(cat bus1-release).img
-
-umount $ROOT/system
 
 # ------------------------------------------------------------------------------
 sync

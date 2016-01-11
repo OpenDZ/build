@@ -53,7 +53,7 @@ initramfs initrd followkernel
 EOF
 
 cat << EOF > $ROOT/boot/cmdline.txt
-partition=/dev/mmcblk0p2
+boot=/dev/mmcblk0p1 var=/dev/mmcblk0p2
 EOF
 
 umount $ROOT/boot
