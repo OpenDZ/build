@@ -70,6 +70,8 @@ BINARIES="$BINARIES \
 # xfs needs crc32c which is not pulled-in
 MODULES="\
   bus1 \
+  dm_mod \
+  dm_verity \
   xfs \
   btrfs \
   squashfs \

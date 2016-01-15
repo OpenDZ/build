@@ -29,5 +29,6 @@ Makefile.in
 /linux
 /system
 /bus1-release
-/system.img
 /firmware
+/system.img
+

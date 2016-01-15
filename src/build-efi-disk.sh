@@ -17,9 +17,9 @@
 #
 #
 # Create UEFI bootable disk image "efi-disk.img". The disk image contains
-# one EFI System Partition (ESP) and one bus1 data partition. The ESP carries
-# an EFI boot manager and an EFI binary containing a Linux kernel and an initrd.
-# The data partition contains a versioned "system.img" to be mounted at /usr.
+# one EFI System Partition (ESP) and a bus1 data partition. The ESP carries
+# an EFI boot manager, an EFI binary containing a Linux kernel and an initrd.
+# and a disk image to be mounted at /usr.
 
 set -e
 
