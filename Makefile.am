@@ -11,6 +11,7 @@ CLEANFILES =
 # ------------------------------------------------------------------------------
 CLEANFILES += \
   system.img \
+  bus1.img \
   initrd \
   efi-disk.img \
   rpi-disk.img
@@ -53,18 +54,21 @@ system.img: system/usr/lib/bus1-release system/usr/lib/modules/$(KVERSION)/kerne
 	find system/usr -type f -name "*.la" -delete
 	rm -f system.img
 	mksquashfs system/usr system.img
-	../base/org.bus1.diskctl image system.img org.bus1.base
 .DELETE_ON_ERROR: system.img
+
+bus1.img: system.img ../base/org.bus1.diskctl
+	../base/org.bus1.diskctl image org.bus1.system system.img bus1.img
+.DELETE_ON_ERROR: bus1.img
 
 initrd: system.img src/build-initrd.sh ../base/org.bus1.rdinit ../base/org.bus1.devices
 	src/build-initrd.sh
 .DELETE_ON_ERROR: initrd
 
-efi-disk.img: $(stub) src/build-efi-disk.sh ../boot-efi/bootx64.efi ../boot-efi/stubx64.efi system.img initrd vmlinuz
+efi-disk.img: $(stub) src/build-efi-disk.sh ../boot-efi/bootx64.efi ../boot-efi/stubx64.efi bus1.img initrd vmlinuz
 	$(AM_V_GEN)src/build-efi-disk.sh
 .DELETE_ON_ERROR: efi-disk.img
 
-rpi-disk.img: system.img initrd
+rpi-disk.img: bus1.img initrd
 	$(AM_V_GEN)src/build-raspberrypi-disk.sh
 .DELETE_ON_ERROR: rpi-disk.img
 
