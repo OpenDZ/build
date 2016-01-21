@@ -60,11 +60,18 @@ objcopy \
 
 cp system.img $ROOT/boot/EFI/bus1/$(cat bus1-release).img
 
+KEY=$(dd if=/dev/urandom bs=32 count=1 status=none | xxd --plain -c32)
+echo $KEY > $ROOT/boot/EFI/bus1/bus1-key.txt
+
 umount $ROOT/boot
 
 # ------------------------------------------------------------------------------
-# System
-mkfs.xfs -L bus1 -q ${LOOP}p2
+# Data
+../base/org.bus1.diskctl encrypt ${LOOP}p2 org.bus1.data
+dmsetup create org.bus1.data --table "0 $(($(blockdev --getsz ${LOOP}p2) - 8)) crypt aes-xts-plain64 ${KEY} 0 ${LOOP}p2 8"
+mkfs.xfs -L bus1 -q /dev/mapper/org.bus1.data
+udevadm settle
+dmsetup remove org.bus1.data
 
 # ------------------------------------------------------------------------------
 sync

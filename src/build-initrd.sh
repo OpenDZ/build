@@ -65,13 +65,15 @@ BINARIES="$BINARIES \
   losetup \
   less \
   grep \
-  mount"
+  mount \
+  umount"
 
 # xfs needs crc32c which is not pulled-in
 MODULES="\
   bus1 \
   dm_mod \
   dm_verity \
+  dm_crypt \
   xfs \
   btrfs \
   squashfs \
@@ -79,7 +81,7 @@ MODULES="\
   loop \
   crc32c_generic \
   sd_mod \
-  ata-piix \
+  ata_piix \
   usb_storage"
 
 DIRECTORIES="\

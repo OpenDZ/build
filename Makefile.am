@@ -53,7 +53,7 @@ system.img: system/usr/lib/bus1-release system/usr/lib/modules/$(KVERSION)/kerne
 	find system/usr -type f -name "*.la" -delete
 	rm -f system.img
 	mksquashfs system/usr system.img
-	../base/org.bus1.imageinfo system.img org.bus1.base
+	../base/org.bus1.diskctl image system.img org.bus1.base
 .DELETE_ON_ERROR: system.img
 
 initrd: system.img src/build-initrd.sh ../base/org.bus1.rdinit ../base/org.bus1.devices
