@@ -17,58 +17,32 @@ LICENSE:
         LGPLv2.1+ (LICENSE.LGPL2.1)
         See COPYING for details.
 
-Example:
-[kay@ank build]$ sudo make efi
-src/install-$(. /etc/os-release; echo $ID).sh
-Fedora rawhide - x86_64                                                                                                                                                            3.3 MB/s |  45 MB     00:13    
-[...]
-Install  105 Packages
-Total download size: 62 M
-Installed size: 284 M
-[...]
-Creating 4.0 filesystem on system.img, block size 131072.
-[...]
-src/build-initrd.sh
-  GEN      efi-disk.img
-Disk efi-disk.img: 1 GiB, 1073741824 bytes, 2097152 sectors
->>> Created a new GPT disklabel (GUID: 4830DA7F-B777-49E4-B26D-874331FEEC4D).
-  Device          Start     End Sectors  Size Type
-  efi-disk.img1    2048 1048575 1046528  511M EFI System
-  efi-disk.img2 1048576 2095103 1046528  511M unknown
-mkfs.fat 3.0.28 (2015-05-16)
-/usr/bin/qemu-system-x86_64 -machine accel=kvm -m 1024 -bios /usr/share/qemu/bios-ovmf.bin -drive format=raw,file=efi-disk.img
+EXAMPLE:
 
-login: root
-bash-4.3# ls -l /
-lrwxrwxrwx  1 root root    7 Nov 29 14:26 bin -> usr/bin
-drwxr-xr-x  4 root root   32 Nov 29 14:26 bus1
-drwxr-xr-x  8 root root 2840 Nov 29 14:26 dev
-lrwxrwxrwx  1 root root    7 Nov 29 14:26 etc -> usr/etc
-drwxr-xr-x  2 root root   60 Nov 29 14:26 lib64
-dr-xr-xr-x 70 root root    0 Nov 29 14:26 proc
-lrwxrwxrwx  1 root root    7 Nov 29 14:26 sbin -> usr/bin
-dr-xr-xr-x 13 root root    0 Nov 29 14:26 sys
-drwxr-xr-x  9 root root  150 Nov 28 12:54 usr
-lrwxrwxrwx  1 root root    9 Nov 29 14:26 var -> bus1/data
+# dmesg | grep bus1
+[    0.000000] Kernel command line: quiet disk=3e92eea4-ded8-440e-9341-50ede3331699 loader=/EFI/bus1/bus1-bus1-1453382599.efi
+[    0.729111] bus1: initialized
+[    0.732449] org.bus1.rdinit[1]: Starting org.bus1.activator.
+[    0.734075] org.bus1.activator[88]: Activating service org.bus1.devices.
+[    0.734957] org.bus1.devices[88]: Coldplug, adjust /dev permissions and load kernel modules for current devices.
+[    0.854306] org.bus1.rdinit[1]: Found disk /dev/sda (3e92eea4-ded8-440e-9341-50ede3331699).
+[    0.854384] org.bus1.rdinit[1]: Found boot partition at /dev/sda1.
+[    0.854388] org.bus1.rdinit[1]: Found data partition at /dev/sda2.
+[    0.855054] org.bus1.rdinit[1]: Mounting boot device /dev/sda1 (vfat) at /boot.
+[    0.866446] org.bus1.rdinit[1]: Setting up cryptographic integrity validation of system image bus1-1453382599.img.
+[    1.020233] org.bus1.rdinit[1]: Mounting /dev/dm-0 (squashfs) at /usr.
+[    1.026268] org.bus1.rdinit[1]: Reading data volume decryption key bus1-key.txt from boot volume.
+[    1.027253] org.bus1.rdinit[1]: Setting up decryption of data volume /dev/sda2.
+[    1.065730] org.bus1.rdinit[1]: Mounting data device /dev/dm-1 (xfs) at /var.
+[    1.165080] org.bus1.rdinit[1]: Executing org.bus1.init.
+[    1.218659] org.bus1.init[1]: Release bus1-1453382599.
+[    1.218739] org.bus1.init[1]: Starting org.bus1.activator.
+[    1.218898] org.bus1.init[1]: Starting getty on tty1.
+[    1.219007] org.bus1.init[1]: Starting getty on ttyS0.
+[    1.276999] org.bus1.activator[178]: Activating service org.bus1.devices.
+[    1.308990] org.bus1.devices[178]: Coldplug, adjust /dev permissions and load kernel modules for current devices.
 
-bash-4.3# df -kh
-Filesystem      Size  Used Avail Use% Mounted on
--               493M     0  493M   0% /
-devtmpfs        493M     0  493M   0% /dev
-/dev/sda2       508M  206M  302M  41% /bus1
-/dev/loop0      180M  180M     0 100% /usr
-
-bash-4.3# mount
-devtmpfs on /dev type devtmpfs (rw,nosuid,size=504388k,nr_inodes=126097,mode=755)
-devpts on /dev/pts type devpts (rw,nosuid,noexec,relatime,mode=620,ptmxmode=000)
-proc on /proc type proc (rw,nosuid,nodev,noexec,relatime)
-sysfs on /sys type sysfs (rw,nosuid,nodev,noexec,relatime)
-bus1fs on /sys/fs/bus1 type bus1fs (rw,nosuid,noexec,relatime)
-/dev/sda2 on /bus1 type xfs (rw,relatime,attr2,inode64,noquota)
-/dev/loop0 on /usr type squashfs (ro,relatime)
-
-bash-4.3# ps afx
-[...]
+# ps afx
   148 ?        S<     0:00  \_ [loop0]
   207 ?        S<     0:00  \_ [ttm_swap]
     1 ?        Ss     0:00 /usr/bin/org.bus1.init
