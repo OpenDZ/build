@@ -39,7 +39,7 @@ system/usr/lib/bus1-release: system/usr/lib/os-release
 system/usr/bin/org.bus1.rdinit: system/usr/lib/bus1-release ../base/org.bus1.rdinit ../base/org.bus1.init ../base/org.bus1.devices
 	make install -C ../base DESTDIR=$$PWD/system
 
-system/usr/bin/bus1ctl: system/usr/lib/bus1-release ../libbus1/bus1ctl
+system/usr/bin/org.bus1.busctl: system/usr/lib/bus1-release ../libbus1/org.bus1.busctl
 	make install -C ../libbus1 DESTDIR=$$PWD/system
 
 KVERSION = $(shell ls -1 system/usr/lib/modules | tail -1)
@@ -49,7 +49,7 @@ system/usr/lib/modules/$(KVERSION)/kernel/ipc/bus1.ko: linux ../bus1/ipc/bus1/bu
 	ln -sf usr/lib system/lib
 	depmod -a -b system $(KVERSION)
 
-system.img: system/usr/lib/bus1-release system/usr/lib/modules/$(KVERSION)/kernel/ipc/bus1.ko system/usr/bin/org.bus1.rdinit system/usr/bin/bus1ctl
+system.img: system/usr/lib/bus1-release system/usr/lib/modules/$(KVERSION)/kernel/ipc/bus1.ko system/usr/bin/org.bus1.rdinit system/usr/bin/org.bus1.busctl
 	rm -rf system/usr/include
 	find system/usr -type f -name "*.la" -delete
 	rm -f system.img
