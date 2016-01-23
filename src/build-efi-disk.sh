@@ -56,7 +56,7 @@ objcopy \
   --add-section .splash=../boot-efi/test/bus1.bmp --change-section-vma .splash=0x40000 \
   --add-section .linux=vmlinuz --change-section-vma .linux=0x2000000 \
   --add-section .initrd=initrd --change-section-vma .initrd=0x3000000 \
-  ../boot-efi/stubx64.efi $ROOT/boot/EFI/bus1/$(cat bus1-release).efi
+  ../boot-efi/stubx64.efi $ROOT/boot/EFI/bus1/$(cat bus1-release)-boot3.efi
 
 cp bus1.img $ROOT/boot/EFI/bus1/$(cat bus1-release).img
 
