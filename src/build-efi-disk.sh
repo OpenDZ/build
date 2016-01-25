@@ -58,10 +58,10 @@ objcopy \
   --add-section .initrd=initrd --change-section-vma .initrd=0x3000000 \
   ../boot-efi/stubx64.efi $ROOT/boot/EFI/bus1/$(cat bus1-release)-boot3.efi
 
-cp bus1.img $ROOT/boot/EFI/bus1/$(cat bus1-release).img
+cp vendor.img $ROOT/boot/EFI/bus1/$(cat bus1-release).img
 
 KEY=$(dd if=/dev/urandom bs=32 count=1 status=none | xxd --plain -c32)
-echo $KEY > $ROOT/boot/EFI/bus1/bus1-key.txt
+echo $KEY > $ROOT/boot/EFI/bus1/vendor-key.txt
 
 umount $ROOT/boot
 

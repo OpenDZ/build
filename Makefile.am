@@ -11,7 +11,7 @@ CLEANFILES =
 # ------------------------------------------------------------------------------
 CLEANFILES += \
   system.img \
-  bus1.img \
+  vendor.img \
   initrd \
   efi-disk.img \
   rpi-disk.img
@@ -34,7 +34,7 @@ system:
 system/usr/lib/bus1-release: system/usr/lib/os-release
 	sed -i 's#root:\*:#root::#' system/usr/etc/shadow
 	sed -i 's#:/root:#:/:#' system/usr/etc/passwd
-	echo bus1-$$(date +%s) > system/usr/lib/bus1-release
+	echo vendor-$$(date +%s) > system/usr/lib/bus1-release
 
 system/usr/bin/org.bus1.rdinit: system/usr/lib/bus1-release ../base/org.bus1.rdinit ../base/org.bus1.init ../base/org.bus1.devices
 	make install -C ../base DESTDIR=$$PWD/system
@@ -56,19 +56,19 @@ system.img: system/usr/lib/bus1-release system/usr/lib/modules/$(KVERSION)/kerne
 	mksquashfs system/usr system.img
 .DELETE_ON_ERROR: system.img
 
-bus1.img: system.img ../base/org.bus1.diskctl
-	../base/org.bus1.diskctl sign org.bus1.system squashfs system.img bus1.img
-.DELETE_ON_ERROR: bus1.img
+vendor.img: system.img ../base/org.bus1.diskctl
+	../base/org.bus1.diskctl sign org.bus1.system squashfs system.img vendor.img
+.DELETE_ON_ERROR: vendor.img
 
 initrd: system.img src/build-initrd.sh ../base/org.bus1.rdinit ../base/org.bus1.devices
 	src/build-initrd.sh
 .DELETE_ON_ERROR: initrd
 
-efi-disk.img: $(stub) src/build-efi-disk.sh ../boot-efi/bootx64.efi ../boot-efi/stubx64.efi bus1.img initrd vmlinuz
+efi-disk.img: $(stub) src/build-efi-disk.sh ../boot-efi/bootx64.efi ../boot-efi/stubx64.efi vendor.img initrd vmlinuz
 	$(AM_V_GEN)src/build-efi-disk.sh
 .DELETE_ON_ERROR: efi-disk.img
 
-rpi-disk.img: bus1.img initrd
+rpi-disk.img: vendor.img initrd
 	$(AM_V_GEN)src/build-raspberrypi-disk.sh
 .DELETE_ON_ERROR: rpi-disk.img
 

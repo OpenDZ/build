@@ -20,7 +20,7 @@ LICENSE:
 EXAMPLE:
 
 # dmesg | grep bus1
-[    0.000000] Kernel command line: quiet disk=3e92eea4-ded8-440e-9341-50ede3331699 loader=/EFI/bus1/bus1-bus1-1453382599.efi
+[    0.000000] Kernel command line: quiet disk=3e92eea4-ded8-440e-9341-50ede3331699 loader=/EFI/bus1/vendor-1453382599.efi
 [    0.729111] bus1: initialized
 [    0.732449] org.bus1.rdinit[1]: Starting org.bus1.activator.
 [    0.734075] org.bus1.activator[88]: Activating service org.bus1.devices.
@@ -29,13 +29,13 @@ EXAMPLE:
 [    0.854384] org.bus1.rdinit[1]: Found boot partition at /dev/sda1.
 [    0.854388] org.bus1.rdinit[1]: Found data partition at /dev/sda2.
 [    0.855054] org.bus1.rdinit[1]: Mounting boot device /dev/sda1 (vfat) at /boot.
-[    0.866446] org.bus1.rdinit[1]: Setting up cryptographic integrity validation of system image bus1-1453382599.img.
+[    0.866446] org.bus1.rdinit[1]: Setting up cryptographic integrity validation of system image vendor-1453382599.img.
 [    1.020233] org.bus1.rdinit[1]: Mounting /dev/dm-0 (squashfs) at /usr.
-[    1.026268] org.bus1.rdinit[1]: Reading data volume decryption key bus1-key.txt from boot volume.
+[    1.026268] org.bus1.rdinit[1]: Reading data volume decryption key vendor-key.txt from boot volume.
 [    1.027253] org.bus1.rdinit[1]: Setting up decryption of data volume /dev/sda2.
 [    1.065730] org.bus1.rdinit[1]: Mounting data device /dev/dm-1 (xfs) at /var.
 [    1.165080] org.bus1.rdinit[1]: Executing org.bus1.init.
-[    1.218659] org.bus1.init[1]: Release bus1-1453382599.
+[    1.218659] org.bus1.init[1]: Release vendor-1453382599.
 [    1.218739] org.bus1.init[1]: Starting org.bus1.activator.
 [    1.218898] org.bus1.init[1]: Starting getty on tty1.
 [    1.219007] org.bus1.init[1]: Starting getty on ttyS0.
