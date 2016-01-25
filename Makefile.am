@@ -57,7 +57,7 @@ system.img: system/usr/lib/bus1-release system/usr/lib/modules/$(KVERSION)/kerne
 .DELETE_ON_ERROR: system.img
 
 bus1.img: system.img ../base/org.bus1.diskctl
-	../base/org.bus1.diskctl image org.bus1.system squashfs system.img bus1.img
+	../base/org.bus1.diskctl sign org.bus1.system squashfs system.img bus1.img
 .DELETE_ON_ERROR: bus1.img
 
 initrd: system.img src/build-initrd.sh ../base/org.bus1.rdinit ../base/org.bus1.devices
