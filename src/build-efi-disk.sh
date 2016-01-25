@@ -67,7 +67,7 @@ umount $ROOT/boot
 
 # ------------------------------------------------------------------------------
 # Data
-../base/org.bus1.diskctl encrypt org.bus1.data ${LOOP}p2
+../base/org.bus1.diskctl encrypt org.bus1.data xfs ${LOOP}p2
 dmsetup create org.bus1.data --table "0 $(($(blockdev --getsz ${LOOP}p2) - 8)) crypt aes-xts-plain64 ${KEY} 0 ${LOOP}p2 8"
 mkfs.xfs -L bus1 -q /dev/mapper/org.bus1.data
 udevadm settle
