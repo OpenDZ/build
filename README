@@ -19,7 +19,13 @@ LICENSE:
 
 EXAMPLE:
 
-# dmesg | grep bus1
+# download and install /usr tree
+$ sudo make system
+
+# build a UEFI bootable disk image and run it in QEMU
+$ sudo make efi
+
+$ dmesg | grep bus1
 [    0.000000] Kernel command line: quiet disk=3e92eea4-ded8-440e-9341-50ede3331699 loader=/EFI/bus1/vendor-1453382599.efi
 [    0.729111] bus1: initialized
 [    0.732449] org.bus1.rdinit[1]: Starting org.bus1.activator.
@@ -42,7 +48,7 @@ EXAMPLE:
 [    1.276999] org.bus1.activator[178]: Activating service org.bus1.devices.
 [    1.308990] org.bus1.devices[178]: Coldplug, adjust /dev permissions and load kernel modules for current devices.
 
-# ps afx
+$ ps afx
   148 ?        S<     0:00  \_ [loop0]
   207 ?        S<     0:00  \_ [ttm_swap]
     1 ?        Ss     0:00 /usr/bin/org.bus1.init
