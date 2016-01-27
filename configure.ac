@@ -33,8 +33,9 @@ AC_ARG_ENABLE(debug, AS_HELP_STRING([--enable-debug], [enable debug options]))
 # QEMU and OVMF UEFI firmware
 AS_IF([test x"$cross_compiling" = "xyes"], [], [
         AC_PATH_PROG([QEMU], [qemu-system-x86_64])
-        AC_CHECK_FILE([/usr/share/qemu/bios-ovmf.bin], [QEMU_BIOS=/usr/share/qemu/bios-ovmf.bin])
         AC_CHECK_FILE([/usr/share/qemu/OVMF.fd], [QEMU_BIOS=/usr/share/qemu/OVMF.fd])
+        AC_CHECK_FILE([/usr/share/qemu/bios-ovmf.bin], [QEMU_BIOS=/usr/share/qemu/bios-ovmf.bin])
+        AC_CHECK_FILE([/usr/share/edk2.git/ovmf-x64/OVMF-pure-efi.fd], [QEMU_BIOS=/usr/share/edk2.git/ovmf-x64/OVMF-pure-efi.fd])
         AC_SUBST([QEMU_BIOS])
 ])
 
