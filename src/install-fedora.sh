@@ -81,7 +81,7 @@ rm -rf $SYSTEM/usr/{src,tmp,games,local}
 dnf -y --nogpg \
   --installroot=$ROOT \
   --releasever=rawhide --disablerepo='*' \
-  --enablerepo=fedora --enablerepo=fedora-rawhide-kernel-nodebug install \
+  --enablerepo=fedora install \
   --exclude grubby \
   kernel kernel-devel
 
