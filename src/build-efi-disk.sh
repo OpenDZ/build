@@ -60,15 +60,12 @@ objcopy \
 
 cp vendor.img $ROOT/boot/EFI/bus1/$(cat bus1-release).img
 
-KEY=$(dd if=/dev/urandom bs=32 count=1 status=none | xxd --plain -c32)
-echo $KEY > $ROOT/boot/EFI/bus1/vendor-key.txt
-
 umount $ROOT/boot
 
 # ------------------------------------------------------------------------------
 # Data
 ../base/org.bus1.diskctl encrypt org.bus1.data xfs ${LOOP}p2
-dmsetup create org.bus1.data --table "0 $(($(blockdev --getsz ${LOOP}p2) - 8)) crypt aes-xts-plain64 ${KEY} 0 ${LOOP}p2 8"
+../base/org.bus1.diskctl setup ${LOOP}p2
 mkfs.xfs -L bus1 -q /dev/mapper/org.bus1.data
 udevadm settle
 dmsetup remove org.bus1.data
