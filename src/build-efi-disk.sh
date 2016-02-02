@@ -64,8 +64,10 @@ umount $ROOT/boot
 
 # ------------------------------------------------------------------------------
 # Data
+dmsetup remove org.bus1.data 2>/dev/null ||:
 ../base/org.bus1.diskctl encrypt org.bus1.data xfs ${LOOP}p2
 ../base/org.bus1.diskctl setup ${LOOP}p2
+udevadm settle
 mkfs.xfs -L bus1 -q /dev/mapper/org.bus1.data
 udevadm settle
 dmsetup remove org.bus1.data
