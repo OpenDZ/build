@@ -39,6 +39,8 @@ EOF
 LOOP=$(losetup --show -f -P efi-disk.img)
 # ------------------------------------------------------------------------------
 # ESP
+RELEASE=$(cat system/usr/lib/bus1-release)
+
 mkfs.vfat -n ESP -F 32 ${LOOP}p1
 mkdir $ROOT/boot
 mount ${LOOP}p1 $ROOT/boot
@@ -47,7 +49,7 @@ mkdir -p $ROOT/boot/EFI/Boot
 cp ../boot-efi/bootx64.efi $ROOT/boot/EFI/Boot/bootx64.efi
 
 mkdir $ROOT/boot/EFI/bus1
-echo -n $(cat bus1-release) | iconv -f UTF-8 -t UTF-16LE > $ROOT/release.txt
+echo -n "$RELEASE" | iconv -f UTF-8 -t UTF-16LE > $ROOT/release.txt
 echo -n "foo=yes quiet" | iconv -f UTF-8 -t UTF-16LE > $ROOT/options.txt
 
 objcopy \
@@ -56,9 +58,9 @@ objcopy \
   --add-section .splash=../boot-efi/test/bus1.bmp --change-section-vma .splash=0x40000 \
   --add-section .linux=vmlinuz --change-section-vma .linux=0x2000000 \
   --add-section .initrd=initrd --change-section-vma .initrd=0x3000000 \
-  ../boot-efi/stubx64.efi $ROOT/boot/EFI/bus1/$(cat bus1-release)-boot3.efi
+  ../boot-efi/stubx64.efi $ROOT/boot/EFI/bus1/$RELEASE-boot3.efi
 
-cp vendor.img $ROOT/boot/EFI/bus1/$(cat bus1-release).img
+cp $RELEASE.img $ROOT/boot/EFI/bus1/$RELEASE.img
 
 umount $ROOT/boot
 

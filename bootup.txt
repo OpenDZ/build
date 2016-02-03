@@ -16,21 +16,19 @@ Kernel 4.5.0-0.rc1.git2.1.fc24.x86_64 on an x86_64 (ttyS0)
 login: root
 
 -bash-4.3# dmesg | grep bus1
-[    0.000000] Command line: quiet disk=b6314dc4-4191-4828-beae-01de2be292da loader=/EFI/bus1/vendor-1454498618.efi console=ttyS0 console=tty0
-[    0.000000] Kernel command line: quiet disk=b6314dc4-4191-4828-beae-01de2be292da loader=/EFI/bus1/vendor-1454498618.efi console=ttyS0 console=tty0
-[    0.647064] bus1: module verification failed: signature and/or required key missing - tainting kernel
+[    0.000000] Kernel command line: quiet disk=b6314dc4-4191-4828-beae-01de2be292da loader=/EFI/bus1/org.example-1454498618.efi console=ttyS0 console=tty0
 [    0.648060] bus1: initialized
 [    0.651364] org.bus1.rdinit[1]: Starting org.bus1.activator.
 [    0.652991] org.bus1.activator[88]: Activating service org.bus1.devices.
 [    0.653979] org.bus1.devices[88]: Coldplug, adjust /dev permissions and load kernel modules for current devices.
 [    0.753869] org.bus1.rdinit[1]: Mounting boot device /dev/sda1 at /boot.
-[    0.763990] org.bus1.rdinit[1]: Setting up cryptographic integrity validation of system image vendor-1454498618.img.
+[    0.763990] org.bus1.rdinit[1]: Setting up cryptographic integrity validation of system image org.example-1454498618.img.
 [    0.775264] org.bus1.rdinit[1]: Mounting /dev/dm-0 (squashfs) at /usr.
 [    0.854821] org.bus1.rdinit[1]: Setting up decryption of data volume /dev/sda2.
 [    0.874521] org.bus1.rdinit[1]: Mounting org.bus1.data device /dev/dm-1 (xfs) at /var.
 [    0.969307] org.bus1.activator[87]: Terminating service org.bus1.devices.
 [    0.979880] org.bus1.rdinit[1]: Executing org.bus1.init.
-[    1.031270] org.bus1.init[1]: Release vendor-1454498618.
+[    1.031270] org.bus1.init[1]: Release org.example-1454498618.
 [    1.031364] org.bus1.init[1]: Starting org.bus1.activator.
 [    1.031480] org.bus1.init[1]: Starting getty on tty1.
 [    1.031594] org.bus1.init[1]: Starting getty on ttyS0.
@@ -75,12 +73,12 @@ tmpfs           5.0M     0  5.0M   0% /
     |-- Boot
     |   `-- bootx64.efi
     `-- bus1
-        |-- vendor-1454498618.efi
-        `-- vendor-1454498618.img
+        |-- org.example-1454498618.efi
+        `-- org.example-1454498618.img
 
--bash-4.3# org.bus1.diskctl info /boot/EFI/bus1/vendor-1454498618.img
+-bash-4.3# org.bus1.diskctl info /boot/EFI/bus1/org.example-1454498618.img
 ==================================================================================
-Info for:         /boot/EFI/bus1/vendor-1454498618.img
+Info for:         /boot/EFI/bus1/org.example-1454498618.img
 Image type:       org.bus1.sign
 Image Name:       org.bus1.system
 Image UUID:       2c1cbd1a-c3da-4609-b276-1f4d04fec907

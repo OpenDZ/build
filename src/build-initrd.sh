@@ -156,7 +156,6 @@ ln -s usr/etc $ROOT/etc
 
 # org.bus1.rdinit uses release string to find the corresponding system.img
 cp sysroot/usr/lib/bus1-release $ROOT/usr/lib/bus1-release
-cp sysroot/usr/lib/bus1-release bus1-release
 
 # the kernel executes /init
 ln -s usr/bin/org.bus1.rdinit $ROOT/init
