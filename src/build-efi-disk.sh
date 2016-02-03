@@ -48,7 +48,7 @@ mount ${LOOP}p1 $ROOT/boot
 mkdir -p $ROOT/boot/EFI/Boot
 cp ../boot-efi/bootx64.efi $ROOT/boot/EFI/Boot/bootx64.efi
 
-mkdir $ROOT/boot/EFI/bus1
+mkdir $ROOT/boot/EFI/org.bus1
 echo -n "$RELEASE" | iconv -f UTF-8 -t UTF-16LE > $ROOT/release.txt
 echo -n "foo=yes quiet" | iconv -f UTF-8 -t UTF-16LE > $ROOT/options.txt
 
@@ -58,9 +58,9 @@ objcopy \
   --add-section .splash=../boot-efi/test/bus1.bmp --change-section-vma .splash=0x40000 \
   --add-section .linux=vmlinuz --change-section-vma .linux=0x2000000 \
   --add-section .initrd=initrd --change-section-vma .initrd=0x3000000 \
-  ../boot-efi/stubx64.efi $ROOT/boot/EFI/bus1/$RELEASE-boot3.efi
+  ../boot-efi/stubx64.efi $ROOT/boot/EFI/org.bus1/$RELEASE-boot3.efi
 
-cp $RELEASE.img $ROOT/boot/EFI/bus1/$RELEASE.img
+cp $RELEASE.img $ROOT/boot/EFI/org.bus1/$RELEASE.img
 
 umount $ROOT/boot
 

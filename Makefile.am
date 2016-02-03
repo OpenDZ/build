@@ -82,7 +82,7 @@ efi: efi-disk.img
 
 qemu: efi-disk.img
 	$(QEMU) -machine accel=kvm -m 1024 -kernel vmlinuz -initrd initrd -serial stdio \
-		-append "quiet disk=$$(blkid -p -s PTUUID -o value efi-disk.img) loader=/EFI/bus1/$$(cat system/usr/lib/bus1-release).efi console=ttyS0 console=tty0" \
+		-append "quiet disk=$$(blkid -p -s PTUUID -o value efi-disk.img) loader=/EFI/org.bus1/$$(cat system/usr/lib/bus1-release).efi console=ttyS0 console=tty0" \
 		-drive format=raw,file=efi-disk.img
 .PHONY: qemu
 

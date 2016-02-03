@@ -7,7 +7,7 @@ $ sudo make efi
 # run the kernel and initrd directly in QEMU:
 $ sudo make qemu
 /usr/bin/qemu-system-x86_64 -machine accel=kvm -m 1024 -kernel vmlinuz -initrd initrd -serial stdio \
-	-append "quiet disk=$(blkid -p -s PTUUID -o value efi-disk.img) loader=/EFI/bus1/$(cat system/usr/lib/bus1-release).efi console=ttyS0 console=tty0" \
+	-append "quiet disk=$(blkid -p -s PTUUID -o value efi-disk.img) loader=/EFI/org.bus1/$(cat system/usr/lib/bus1-release).efi console=ttyS0 console=tty0" \
 	-drive format=raw,file=efi-disk.img
 
 Fedora 24 (Rawhide)
@@ -16,7 +16,7 @@ Kernel 4.5.0-0.rc1.git2.1.fc24.x86_64 on an x86_64 (ttyS0)
 login: root
 
 -bash-4.3# dmesg | grep bus1
-[    0.000000] Kernel command line: quiet disk=b6314dc4-4191-4828-beae-01de2be292da loader=/EFI/bus1/org.example-1454498618.efi console=ttyS0 console=tty0
+[    0.000000] Kernel command line: quiet disk=b6314dc4-4191-4828-beae-01de2be292da loader=/EFI/org.bus1/org.example-1454498618.efi console=ttyS0 console=tty0
 [    0.648060] bus1: initialized
 [    0.651364] org.bus1.rdinit[1]: Starting org.bus1.activator.
 [    0.652991] org.bus1.activator[88]: Activating service org.bus1.devices.
@@ -76,9 +76,9 @@ tmpfs           5.0M     0  5.0M   0% /
         |-- org.example-1454498618.efi
         `-- org.example-1454498618.img
 
--bash-4.3# org.bus1.diskctl info /boot/EFI/bus1/org.example-1454498618.img
+-bash-4.3# org.bus1.diskctl info /boot/EFI/org.bus1/org.example-1454498618.img
 ==================================================================================
-Info for:         /boot/EFI/bus1/org.example-1454498618.img
+Info for:         /boot/EFI/org.bus1/org.example-1454498618.img
 Image type:       org.bus1.sign
 Image Name:       org.bus1.system
 Image UUID:       2c1cbd1a-c3da-4609-b276-1f4d04fec907
