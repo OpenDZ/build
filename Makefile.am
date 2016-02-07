@@ -1,6 +1,7 @@
 VENDOR=org.example
-VERSION=$(shell date +%s)
-RELEASE=$(shell cat system/usr/lib/bus1-release)
+DATA_FSTYPE=xfs
+VERSION=$(shell date +%s)a
+RELEASE=$(shell cat system/usr/lib/org.bus1/release)
 
 SHELL=bash
 ACLOCAL_AMFLAGS = -I m4 ${ACLOCAL_FLAGS}
@@ -35,15 +36,17 @@ rpi:
 system:
 	src/install-$$(. /etc/os-release; echo $${ID_LIKE:-$$ID}).sh
 
-system/usr/lib/bus1-release: system/usr/lib/os-release
+system/usr/lib/org.bus1/release: system/usr/lib/os-release
 	sed -i 's#root:\*:#root::#' system/usr/etc/shadow
 	sed -i 's#:/root:#:/:#' system/usr/etc/passwd
-	echo $(VENDOR)-$(VERSION) > system/usr/lib/bus1-release
+	mkdir -p system/usr/lib/org.bus1
+	echo $(VENDOR)-$(VERSION) > system/usr/lib/org.bus1/release
+	echo $(DATA_FSTYPE) > system/usr/lib/org.bus1/data.fstype
 
-system/usr/bin/org.bus1.rdinit: system/usr/lib/bus1-release ../base/org.bus1.rdinit ../base/org.bus1.init ../base/org.bus1.devices
+system/usr/bin/org.bus1.rdinit: system/usr/lib/org.bus1/release ../base/org.bus1.rdinit ../base/org.bus1.init ../base/org.bus1.devices
 	make install -C ../base DESTDIR=$$PWD/system
 
-system/usr/bin/org.bus1.busctl: system/usr/lib/bus1-release ../libbus1/org.bus1.busctl
+system/usr/bin/org.bus1.busctl: system/usr/lib/org.bus1/release ../libbus1/org.bus1.busctl
 	make install -C ../libbus1 DESTDIR=$$PWD/system
 
 KERN_VERSION = $(shell ls -1 system/usr/lib/modules | tail -1)
@@ -53,7 +56,7 @@ system/usr/lib/modules/$(KERN_VERSION)/kernel/ipc/bus1.ko: linux ../bus1/ipc/bus
 	ln -sf usr/lib system/lib
 	depmod -a -b system $(KERN_VERSION)
 
-system.img: system/usr/lib/bus1-release system/usr/lib/modules/$(KERN_VERSION)/kernel/ipc/bus1.ko system/usr/bin/org.bus1.rdinit system/usr/bin/org.bus1.busctl
+system.img: system/usr/lib/org.bus1/release system/usr/lib/modules/$(KERN_VERSION)/kernel/ipc/bus1.ko system/usr/bin/org.bus1.rdinit system/usr/bin/org.bus1.busctl
 	rm -rf system/usr/include
 	find system/usr -type f -name "*.la" -delete
 	rm -f system.img
@@ -82,7 +85,7 @@ efi: efi-disk.img
 
 qemu: efi-disk.img
 	$(QEMU) -machine accel=kvm -m 1024 -kernel vmlinuz -initrd initrd -serial stdio \
-		-append "quiet disk=$$(blkid -p -s PTUUID -o value efi-disk.img) loader=/EFI/org.bus1/$$(cat system/usr/lib/bus1-release).efi console=ttyS0 console=tty0" \
+		-append "quiet disk=$$(blkid -p -s PTUUID -o value efi-disk.img) loader=/EFI/org.bus1/$$(cat system/usr/lib/org.bus1/release).efi console=ttyS0 console=tty0" \
 		-drive format=raw,file=efi-disk.img
 .PHONY: qemu
 

@@ -39,7 +39,7 @@ EOF
 LOOP=$(losetup --show -f -P efi-disk.img)
 # ------------------------------------------------------------------------------
 # ESP
-RELEASE=$(cat system/usr/lib/bus1-release)
+RELEASE=$(cat system/usr/lib/org.bus1/release)
 
 mkfs.vfat -n ESP -F 32 ${LOOP}p1
 mkdir $ROOT/boot
@@ -66,11 +66,12 @@ umount $ROOT/boot
 
 # ------------------------------------------------------------------------------
 # Data
+DATA_FSTYPE=$(cat system/usr/lib/org.bus1/data.fstype)
 dmsetup remove org.bus1.data 2>/dev/null ||:
-../base/org.bus1.diskctl encrypt org.bus1.data xfs ${LOOP}p2
+../base/org.bus1.diskctl encrypt org.bus1.data "$DATA_FSTYPE" ${LOOP}p2
 ../base/org.bus1.diskctl setup ${LOOP}p2
 udevadm settle
-mkfs.xfs -L bus1 -q /dev/mapper/org.bus1.data
+mkfs.$DATA_FSTYPE -L bus1 -q /dev/mapper/org.bus1.data
 udevadm settle
 dmsetup remove org.bus1.data
 

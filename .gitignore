@@ -28,6 +28,5 @@ Makefile.in
 /vmlinuz
 /linux
 /system
-/bus1-release
 /firmware
 /*.img

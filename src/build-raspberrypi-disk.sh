@@ -65,7 +65,7 @@ mkfs.btrfs -L bus1 ${LOOP}p2
 mount ${LOOP}p2 $ROOT/system
 
 mkdir -p $ROOT/system/{system,data}
-cp system.img $ROOT/system/system/$(cat bus1-release).img
+cp system.img $ROOT/system/system/$(cat system/usr/lib/org.bus1/release).img
 
 umount $ROOT/system
 

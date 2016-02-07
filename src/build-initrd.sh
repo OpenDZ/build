@@ -146,8 +146,8 @@ else
   ln -s $ARCHITECTURE_TUPLE/$DYNLOADER $ROOT/usr/lib/$DYNLOADER
 fi
 
-mkdir $ROOT/var
 mkdir -m 01777 $ROOT/tmp
+mkdir $ROOT/var
 
 mkdir -p $ROOT/usr/etc/ld.so.conf.d/
 echo "include ld.so.conf.d/*.conf" > $ROOT/usr/etc/ld.so.conf
@@ -155,7 +155,8 @@ echo "/usr/lib/$ARCHITECTURE_TUPLE" > $ROOT/usr/etc/ld.so.conf.d/$ARCHITECTURE_T
 ln -s usr/etc $ROOT/etc
 
 # org.bus1.rdinit uses release string to find the corresponding system.img
-cp sysroot/usr/lib/bus1-release $ROOT/usr/lib/bus1-release
+mkdir -p $ROOT/usr/lib/org.bus1
+cp sysroot/usr/lib/org.bus1/* $ROOT/usr/lib/org.bus1
 
 # the kernel executes /init
 ln -s usr/bin/org.bus1.rdinit $ROOT/init
