@@ -1,7 +1,7 @@
 AC_INIT([build],
         [1],
         [http://www.github.com/bus1/build],
-        [boot-efi],
+        [build],
         [http://www.github.com/bus1/build])
 
 AC_CONFIG_SRCDIR([src/build-efi-disk.sh])
