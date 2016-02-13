@@ -37,6 +37,7 @@ rpi-disk.img4 : start=        0, size=        0, Id= 0
 EOF
 
 LOOP=$(losetup --show -f -P rpi-disk.img)
+
 # ------------------------------------------------------------------------------
 # Boot
 mkfs.vfat -n BOOT -F 32 ${LOOP}p1
@@ -56,18 +57,21 @@ cat << EOF > $ROOT/boot/cmdline.txt
 boot=/dev/mmcblk0p1 var=/dev/mmcblk0p2
 EOF
 
+RELEASE=$(cat system/usr/lib/org.bus1/release)
+cp $RELEASE.img $ROOT/boot/$RELEASE.img
+
 umount $ROOT/boot
 
 # ------------------------------------------------------------------------------
-# System
-mkdir $ROOT/system
-mkfs.btrfs -L bus1 ${LOOP}p2
-mount ${LOOP}p2 $ROOT/system
-
-mkdir -p $ROOT/system/{system,data}
-cp system.img $ROOT/system/system/$(cat system/usr/lib/org.bus1/release).img
-
-umount $ROOT/system
+# Data
+DATA_FSTYPE=$(cat system/usr/lib/org.bus1/data.fstype)
+dmsetup remove org.bus1.data 2>/dev/null ||:
+../base/org.bus1.diskctl encrypt org.bus1.data "$DATA_FSTYPE" ${LOOP}p2
+../base/org.bus1.diskctl setup ${LOOP}p2
+udevadm settle
+mkfs.$DATA_FSTYPE -L bus1 -q /dev/mapper/org.bus1.data
+udevadm settle
+dmsetup remove org.bus1.data
 
 # ------------------------------------------------------------------------------
 sync

@@ -37,10 +37,9 @@ start=1MiB, size=511MiB, type=c12a7328-f81f-11d2-ba4b-00a0c93ec93b, name="ESP"
 EOF
 
 LOOP=$(losetup --show -f -P efi-disk.img)
+
 # ------------------------------------------------------------------------------
 # ESP
-RELEASE=$(cat system/usr/lib/org.bus1/release)
-
 mkfs.vfat -n ESP -F 32 ${LOOP}p1
 mkdir $ROOT/boot
 mount ${LOOP}p1 $ROOT/boot
@@ -48,6 +47,7 @@ mount ${LOOP}p1 $ROOT/boot
 mkdir -p $ROOT/boot/EFI/Boot
 cp ../boot-efi/bootx64.efi $ROOT/boot/EFI/Boot/bootx64.efi
 
+RELEASE=$(cat system/usr/lib/org.bus1/release)
 mkdir $ROOT/boot/EFI/org.bus1
 echo -n "$RELEASE" | iconv -f UTF-8 -t UTF-16LE > $ROOT/release.txt
 echo -n "foo=yes quiet" | iconv -f UTF-8 -t UTF-16LE > $ROOT/options.txt
