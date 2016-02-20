@@ -1,19 +1,33 @@
-VENDOR=org.example
-DATA_FSTYPE=xfs
-VERSION=$(shell date +%s)a
-RELEASE=$(shell cat system/usr/lib/org.bus1/release)
+# ------------------------------------------------------------------------------
+# autotools
 
 SHELL=bash
-ACLOCAL_AMFLAGS = -I m4 ${ACLOCAL_FLAGS}
+ACLOCAL_AMFLAGS = -I build/m4 ${ACLOCAL_FLAGS}
 AM_MAKEFLAGS = --no-print-directory
 AUTOMAKE_OPTIONS = color-tests parallel-tests
 
 GCC_COLORS ?= 'ooh, shiny!'
 export GCC_COLORS
 
-CLEANFILES =
+SUBDIRS = .
+
+# remove targets if the command fails
+.DELETE_ON_ERROR:
+
+# keep intermediate files
+.SECONDARY:
+
+# keep the test-suite.log and Makefile around at all times
+.PRECIOUS: $(TEST_SUITE_LOG) Makefile
+
+CLEANFILES = $(BUILT_SOURCES)
 
 # ------------------------------------------------------------------------------
+VENDOR=org.example
+DATA_FSTYPE=xfs
+VERSION=$(shell date +%s)a
+RELEASE=$(shell cat system/usr/lib/org.bus1/release)
+
 CLEANFILES += \
   system.img \
   $(RELEASE).img \

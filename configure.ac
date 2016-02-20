@@ -1,33 +1,29 @@
+# ------------------------------------------------------------------------------
+# versions
+
+AC_PREREQ([2.64])
 AC_INIT([build],
         [1],
         [http://www.github.com/bus1/build],
         [build],
         [http://www.github.com/bus1/build])
 
-AC_CONFIG_SRCDIR([src/build-efi-disk.sh])
-AC_CONFIG_MACRO_DIR([m4])
-AC_CONFIG_HEADERS([config.h])
-AC_CONFIG_AUX_DIR([build-aux])
-
-AM_INIT_AUTOMAKE([foreign 1.11 -Wall -Wno-portability silent-rules tar-pax no-dist-gzip dist-xz subdir-objects])
-AM_SILENT_RULES([yes])
-
-AC_CANONICAL_HOST
-AC_SYS_LARGEFILE
-
-AC_PROG_CC
-
-AC_PROG_CC_C99
-AM_PROG_CC_C_O
-AC_PROG_GCC_TRADITIONAL
-
-AC_PROG_MKDIR_P
-AC_CHECK_TOOL(OBJCOPY, objcopy)
-
 # ------------------------------------------------------------------------------
-# arguments
+# autotools
 
-AC_ARG_ENABLE(debug, AS_HELP_STRING([--enable-debug], [enable debug options]))
+AC_CONFIG_SRCDIR([src/build-initrd.sh])
+AC_CONFIG_MACRO_DIR([build/m4])
+AC_CONFIG_HEADERS([build/config.h])
+AC_CONFIG_AUX_DIR([build/build-aux])
+
+AM_MAINTAINER_MODE([enable])
+AM_INIT_AUTOMAKE([foreign 1.11 -Wall -Wno-portability silent-rules tar-pax no-dist-gzip dist-xz subdir-objects parallel-tests])
+AM_SILENT_RULES([yes])
+AC_CANONICAL_HOST
+AC_DEFINE_UNQUOTED([CANONICAL_HOST], "$host", [Canonical host string.])
+
+AS_IF([! ln --relative --help > /dev/null 2>&1], [AC_MSG_ERROR([*** ln doesn't support --relative ***])])
+m4_pattern_forbid([^_?PKG_[A-Z_]+$],[*** pkg.m4 missing, please install pkg-config])
 
 # ------------------------------------------------------------------------------
 # QEMU and OVMF UEFI firmware
@@ -40,16 +36,15 @@ AS_IF([test x"$cross_compiling" = "xyes"], [], [
 ])
 
 # ------------------------------------------------------------------------------
-AC_CONFIG_FILES([
-        Makefile
-])
+# report
+
+AC_CONFIG_FILES([Makefile])
 
 AC_OUTPUT
 AC_MSG_RESULT([
         $PACKAGE_NAME $VERSION
+        prefix:                 ${prefix}
+        QEMU:                   ${QEMU}
+        QEMU OVMF:              ${QEMU_BIOS}
 
-        prefix:                  ${prefix}
-
-        QEMU:                    ${QEMU}
-        QEMU OVMF:               ${QEMU_BIOS}
 ])
