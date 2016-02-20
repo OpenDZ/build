@@ -103,13 +103,13 @@ qemu: efi-disk.img
 		-drive format=raw,file=efi-disk.img
 .PHONY: qemu
 
-update:
+pull:
 	git pull --rebase
 	(cd ../libbus1 && git pull --rebase)
 	(cd ../base && git pull --rebase)
 	(cd ../bus1 && git pull --rebase)
 	[[ ! -e ../boot-efi ]] || (cd ../boot-efi && git pull --rebase)
-.PHONY: update
+.PHONY: pull
 
 build: linux
 	(cd ../libbus1 && ./autogen.sh b && make clean && make -j8)
