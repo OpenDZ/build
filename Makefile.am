@@ -23,7 +23,7 @@ CLEANFILES = $(BUILT_SOURCES)
 # ------------------------------------------------------------------------------
 VENDOR=org.example
 DATA_FSTYPE=xfs
-VERSION=$(shell date +%s)a
+VERSION=$(shell date +%s)
 RELEASE=$(shell cat system/usr/lib/org.bus1/release)
 
 CLEANFILES += \
