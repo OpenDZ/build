@@ -21,10 +21,10 @@ export GCC_COLORS
 CLEANFILES = $(BUILT_SOURCES)
 
 # ------------------------------------------------------------------------------
-VENDOR=org.example
-DATA_FSTYPE=xfs
-VERSION=$(shell date +%s)
-RELEASE=$(shell cat system/usr/lib/org.bus1/release)
+VENDOR = org.example
+DATA_FSTYPE = xfs
+VERSION = $(shell date +%s)
+RELEASE = $(shell cat system/usr/lib/org.bus1/release 2> /dev/null)
 
 CLEANFILES += \
   system.img \
@@ -61,7 +61,7 @@ system/usr/bin/org.bus1.rdinit: system/usr/lib/org.bus1/release ../base/org.bus1
 system/usr/bin/org.bus1.busctl: system/usr/lib/org.bus1/release ../libbus1/org.bus1.busctl
 	make install -C ../libbus1 DESTDIR=$$PWD/system
 
-KERN_VERSION = $(shell ls -1 system/usr/lib/modules | tail -1)
+KERN_VERSION = $(shell ls -1 system/usr/lib/modules 2>/dev/null | tail -1)
 system/usr/lib/modules/$(KERN_VERSION)/kernel/ipc/bus1.ko: linux ../bus1/ipc/bus1/bus1.ko
 	mkdir -p system/usr/lib/modules/$(KERN_VERSION)/kernel/ipc
 	cp ../bus1/ipc/bus1/bus1.ko system/usr/lib/modules/$(KERN_VERSION)/kernel/ipc

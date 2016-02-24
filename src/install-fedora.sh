@@ -49,7 +49,6 @@ dnf -y --nogpg \
   procps-ng \
   kmod \
   xfsprogs \
-  btrfs-progs \
   elfutils-libs \
   less \
   vim

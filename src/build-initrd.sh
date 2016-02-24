@@ -74,10 +74,15 @@ MODULES="\
   dm_mod \
   dm_verity \
   dm_crypt \
+  xts \
   xfs \
-  btrfs \
   squashfs \
   vfat \
+  nls_cp437 \
+  nls_ascii \
+  nls_utf8 \
+  aes-x86_64 \
+  sha256_generic \
   loop \
   crc32c_generic \
   sd_mod \
