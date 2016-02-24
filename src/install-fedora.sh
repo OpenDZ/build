@@ -68,7 +68,13 @@ cp -ax $ROOT/etc $SYSTEM/usr
 rm -f $SYSTEM/usr/etc/{resolv.conf,machine-id,mtab,hostname,localtime}
 
 # merge sbin into bin
-mv --no-clobber $SYSTEM/usr/sbin/* $SYSTEM/usr/bin
+mkdir $SYSTEM/usr/bin.new
+find $SYSTEM/usr/bin -type f -print0 | xargs -0 -r cp --no-clobber -t $SYSTEM/usr/bin.new --
+find $SYSTEM/usr/sbin -type f -print0 | xargs -0 -r cp --no-clobber -t $SYSTEM/usr/bin.new --
+rsync -a --ignore-existing $SYSTEM/usr/bin/ $SYSTEM/usr/bin.new/
+rsync -a --ignore-existing $SYSTEM/usr/sbin/ $SYSTEM/usr/bin.new/
+rm -rf $SYSTEM/usr/bin
+mv $SYSTEM/usr/bin.new $SYSTEM/usr/bin
 rm -rf $SYSTEM/usr/sbin
 ln -s bin $SYSTEM/usr/sbin
 
