@@ -15,10 +15,8 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with bus1; If not, see <http://www.gnu.org/licenses/>.
 #
-#
-# Download ARCH Linux to the "system" directory. The
-# entire system is contained in a single /usr directory:
-# - move /etc to /usr/etc
+# Download ARCH Linux to the "system" directory. The  entire system is
+# contained in a single /usr directory. /etc moved to /usr/etc.
 #
 # The development headers of the installed kernel are stored in
 # "linux". The kernel image is stored as "vmlinuz".
@@ -30,7 +28,7 @@ test "$UID" == "0" || exit 1
 # ------------------------------------------------------------------------------
 ROOT=$(mktemp -d /tmp/install-tmpXXX)
 
-# this might require "sudo pacman-key --populate"
+# this command might require setup with "sudo pacman-key --populate"
 pacstrap -c -d $ROOT base linux-headers
 
 # remove kernel modules magic
