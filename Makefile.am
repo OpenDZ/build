@@ -33,6 +33,10 @@ CLEANFILES += \
   efi-disk.img \
   rpi-disk.img
 
+arch:
+	src/install-archlinux.sh
+.PHONY: arch
+
 debian:
 	src/install-debian.sh
 .PHONY: debian

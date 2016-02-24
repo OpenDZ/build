@@ -59,7 +59,6 @@ BINARIES="$BINARIES \
   dmesg \
   lsmod \
   chroot \
-  strace \
   df \
   stat \
   losetup \
@@ -81,6 +80,7 @@ MODULES="\
   nls_cp437 \
   nls_ascii \
   nls_utf8 \
+  nls_iso8859-1 \
   aes-x86_64 \
   sha256_generic \
   loop \
