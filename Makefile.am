@@ -105,16 +105,31 @@ qemu: efi-disk.img
 		-drive format=raw,file=efi-disk.img
 .PHONY: qemu
 
-pull:
+bpull:
 	git pull --rebase
 	(cd ../libbus1 && git pull --rebase)
 	(cd ../base && git pull --rebase)
 	(cd ../bus1 && git pull --rebase)
 	[[ ! -e ../boot-efi ]] || (cd ../boot-efi && git pull --rebase)
-.PHONY: pull
+.PHONY: bpull
 
-build: linux
-	(cd ../libbus1 && ./autogen.sh b && make clean && make -j8)
-	(cd ../base && ./autogen.sh b && make clean && make -j8)
-	(cd ../bus1 && make clean && make b -j8)
-	[[ ! -e ../boot-efi ]] || (cd ../boot-efi && ./autogen.sh b && make clean && make -j8)
+bclean:
+	git clean -x -d -f && rm -rf firmware linux
+	(cd ../libbus1 && git clean -x -d -f)
+	(cd ../base && git clean -x -d -f)
+	(cd ../bus1 && git clean -x -d -f)
+	[[ ! -e ../boot-efi ]] || (cd ../boot-efi && git clean -x -d -f)
+.PHONY: bclean
+
+bgen:
+	(cd ../libbus1 && ./autogen.sh b)
+	(cd ../base && ./autogen.sh b)
+	[[ ! -e ../boot-efi ]] || (cd ../boot-efi && ./autogen.sh b)
+.PHONY: bgen
+
+bbuild: linux
+	(cd ../libbus1 && make -j8)
+	(cd ../base && make -j8)
+	(cd ../bus1 && make b -j8)
+	[[ ! -e ../boot-efi ]] || (cd ../boot-efi && make -j8)
+.PHONY: bbuild
