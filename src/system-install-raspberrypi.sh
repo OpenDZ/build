@@ -73,7 +73,7 @@ KVERSION=$(ls -1v firmware/modules/ | tail -1)
 # install kernel modules
 mkdir -p $SYSTEM/usr/lib/modules
 cp -ax firmware/modules/$KVERSION $SYSTEM/usr/lib/modules
-cp linux/drivers/md/dm-{bufio,verity}.ko $SYSTEM/usr/lib/modules/$KVERSION/drivers/md
+cp linux/drivers/md/dm-{bufio,verity}.ko $SYSTEM/usr/lib/modules/$KVERSION/kernel/drivers/md
 
 # ------------------------------------------------------------------------------
 # delete cruft
