@@ -90,7 +90,7 @@ dnf -y --nogpg \
   --exclude grubby \
   kernel kernel-devel
 
-KVERSION=$(ls -1 $ROOT/usr/lib/modules | tail -1)
+KVERSION=$(ls -1v $ROOT/usr/lib/modules | tail -1)
 
 # copy kernel
 mv $ROOT/usr/lib/modules/$KVERSION/vmlinuz vmlinuz

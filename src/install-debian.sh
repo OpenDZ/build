@@ -57,7 +57,7 @@ rm -rf $SYSTEM/usr/lib/terminfo/
 
 # ------------------------------------------------------------------------------
 # copy kernel
-KVERSION=$(ls -1 $ROOT/lib/modules | tail -1)
+KVERSION=$(ls -1v $ROOT/lib/modules | tail -1)
 cp $ROOT/boot/vmlinuz-$KVERSION vmlinuz
 
 # copy kernel headers

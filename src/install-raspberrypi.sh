@@ -57,15 +57,23 @@ rm -rf $SYSTEM/usr/lib/terminfo/
 
 # ------------------------------------------------------------------------------
 # download kernel and binaries for /boot
-git clone --depth=1 https://github.com/raspberrypi/firmware.git
-git clone --depth=1 https://github.com/raspberrypi/linux.git
-make -C linux KERNEL=kernel7 bcm2709_defconfig
-make -C linux modules_prepare headers_install
+git clone --depth=1 --branch=next https://github.com/raspberrypi/firmware.git
+git clone --depth=1 --branch=rpi-4.4.y https://github.com/raspberrypi/linux.git
+make -j4 -C linux KERNEL=kernel7 bcm2709_defconfig
+make -j4 -C linux modules_prepare headers_install
 cp firmware/extra/Module7.symvers linux/Module.symvers
+
+# build the missing modules
+sed -i 's/.*CONFIG_DM_VERITY.*/CONFIG_DM_VERITY=m/' linux/.config
+make -C linux silentoldconfig
+make -j4 -C linux M=drivers/md
+
+KVERSION=$(ls -1v firmware/modules/ | tail -1)
 
 # install kernel modules
 mkdir -p $SYSTEM/usr/lib/modules
-cp -ax firmware/modules/$(ls -1v firmware/modules/ | tail -1) $SYSTEM/usr/lib/modules
+cp -ax firmware/modules/$KVERSION $SYSTEM/usr/lib/modules
+cp linux/drivers/md/dm-{bufio,verity}.ko $SYSTEM/usr/lib/modules/$KVERSION/drivers/md
 
 # ------------------------------------------------------------------------------
 # delete cruft
