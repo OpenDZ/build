@@ -34,23 +34,23 @@ CLEANFILES += \
   rpi-disk.img
 
 arch:
-	src/install-archlinux.sh
+	src/system-install-archlinux.sh
 .PHONY: arch
 
 debian:
-	src/install-debian.sh
+	src/system-install-debian.sh
 .PHONY: debian
 
 fedora:
-	src/install-fedora.sh
+	src/system-install-fedora.sh
 .PHONY: fedora
 
 rpi:
-	src/install-raspberrypi.sh
+	src/system-install-raspberrypi.sh
 .PHONY: rpi
 
 system:
-	src/install-$$(. /etc/os-release; echo $${ID_LIKE:-$$ID}).sh
+	src/system-install-$$(. /etc/os-release; echo $${ID_LIKE:-$$ID}).sh
 
 system/usr/lib/org.bus1/release: system/usr/lib/os-release
 	sed -i 's#root:\*:#root::#' system/usr/etc/shadow
@@ -83,16 +83,16 @@ $(RELEASE).img: system.img ../base/org.bus1.diskctl
 	../base/org.bus1.diskctl sign org.bus1.system squashfs system.img $(RELEASE).img
 .DELETE_ON_ERROR: $(RELEASE).img
 
-initrd: system.img src/build-initrd.sh ../base/org.bus1.rdinit ../base/org.bus1.devices
-	src/build-initrd.sh
+initrd: system.img src/initrd-build.sh ../base/org.bus1.rdinit ../base/org.bus1.devices
+	src/initrd-build.sh
 .DELETE_ON_ERROR: initrd
 
-efi-disk.img: $(stub) src/build-efi-disk.sh ../boot-efi/bootx64.efi ../boot-efi/stubx64.efi $(RELEASE).img initrd vmlinuz
-	$(AM_V_GEN)src/build-efi-disk.sh
+efi-disk.img: $(stub) src/disk-build-efi.sh ../boot-efi/bootx64.efi ../boot-efi/stubx64.efi $(RELEASE).img initrd vmlinuz
+	$(AM_V_GEN)src/disk-build-efi.sh
 .DELETE_ON_ERROR: efi-disk.img
 
-rpi-disk.img: $(RELEASE).img initrd
-	$(AM_V_GEN)src/build-raspberrypi-disk.sh
+rpi-disk.img: $(RELEASE).img initrd src/disk-build-raspberrypi.sh
+	$(AM_V_GEN)src/disk-build-raspberrypi.sh
 .DELETE_ON_ERROR: rpi-disk.img
 
 efi: efi-disk.img

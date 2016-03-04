@@ -11,7 +11,7 @@ AC_INIT([build],
 # ------------------------------------------------------------------------------
 # autotools
 
-AC_CONFIG_SRCDIR([src/build-initrd.sh])
+AC_CONFIG_SRCDIR([src/initrd-build.sh])
 AC_CONFIG_MACRO_DIR([build/m4])
 AC_CONFIG_HEADERS([build/config.h])
 AC_CONFIG_AUX_DIR([build/build-aux])
