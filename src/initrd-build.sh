@@ -39,10 +39,11 @@ fi
 # ------------------------------------------------------------------------------
 # modprobe is called by the kernel itself
 BINARIES="\
-  org.bus1.rdinit \
   org.bus1.activator \
+  org.bus1.coredump \
   org.bus1.devices \
   org.bus1.init \
+  org.bus1.rdinit \
   modprobe"
 
 # only needed for debugging
