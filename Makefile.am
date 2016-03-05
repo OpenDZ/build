@@ -95,6 +95,11 @@ rpi-disk.img: $(RELEASE).img initrd src/disk-build-raspberrypi.sh
 	$(AM_V_GEN)src/disk-build-raspberrypi.sh
 .DELETE_ON_ERROR: rpi-disk.img
 
+rpidd: rpi-disk.img
+	if grep -q sda /proc/self/mountinfo; then false; fi
+	dd if=rpi-disk.img of=/dev/sda bs=1MiB
+.PHONY: rpidd
+
 efi: efi-disk.img
 	$(QEMU) -machine accel=kvm -m 1024 -bios $(QEMU_BIOS) -drive format=raw,file=efi-disk.img
 .PHONY: efi
