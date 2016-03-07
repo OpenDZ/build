@@ -54,7 +54,7 @@ initramfs initrd followkernel
 EOF
 
 cat << EOF > $ROOT/boot/cmdline.txt
-boot=/dev/mmcblk0p1 data=/dev/mmcblk0p2
+quiet boot=/dev/mmcblk0p1 data=/dev/mmcblk0p2
 EOF
 
 RELEASE=$(cat system/usr/lib/org.bus1/release)
