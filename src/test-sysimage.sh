@@ -35,7 +35,11 @@ cd sysroot
 
 # usr is read-only
 mkdir -p usr
-mount -tsquashfs "$SYSIMAGE" usr
+if [[ -d "$SYSIMAGE" ]]; then
+        mount --bind --read-only "$SYSIMAGE" usr
+else
+        mount -tsquashfs "$SYSIMAGE" usr
+fi
 
 # top-level symlinks
 ln -s usr/bin bin
