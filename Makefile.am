@@ -27,11 +27,11 @@ VERSION = $(shell date +%s)
 RELEASE = $(shell cat system/usr/lib/org.bus1/release 2> /dev/null)
 
 CLEANFILES += \
-  system.img \
-  $(RELEASE).img \
-  initrd \
-  efi-disk.img \
-  rpi-disk.img
+	system.img \
+	$(RELEASE).img \
+	initrd \
+	efi-disk.img \
+	rpi-disk.img
 
 arch:
 	src/system-install-archlinux.sh
@@ -62,8 +62,14 @@ system/usr/lib/org.bus1/release: system/usr/lib/os-release
 system/usr/bin/org.bus1.rdinit: system/usr/lib/org.bus1/release ../base/org.bus1.rdinit ../base/org.bus1.init ../base/org.bus1.devices
 	make install -C ../base DESTDIR=$$PWD/system
 
-system/usr/bin/org.bus1.busctl: system/usr/lib/org.bus1/release ../libbus1/org.bus1.busctl
+system/usr/include/orb.bus1/b1.h: system/usr/lib/org.bus1/release ../libbus1/src/org.bus1/b1.h
 	make install -C ../libbus1 DESTDIR=$$PWD/system
+
+system/usr/include/orb.bus1/c-variant.h: system/usr/lib/org.bus1/release ../cvariant/src/org.bus1/c-variant.h
+	make install -C ../cvariant DESTDIR=$$PWD/system
+
+system/usr/include/orb.bus1/c-rbtree.h: system/usr/lib/org.bus1/release ../crbtree/src/org.bus1/c-rbtree.h
+	make install -C ../crbtree DESTDIR=$$PWD/system
 
 KERN_VERSION = $(shell ls -1 system/usr/lib/modules 2>/dev/null | tail -1)
 system/usr/lib/modules/$(KERN_VERSION)/kernel/ipc/bus1.ko: linux ../bus1/ipc/bus1/bus1.ko
@@ -72,7 +78,7 @@ system/usr/lib/modules/$(KERN_VERSION)/kernel/ipc/bus1.ko: linux ../bus1/ipc/bus
 	ln -sf usr/lib system/lib
 	depmod -a -b system $(KERN_VERSION)
 
-system.img: system/usr/lib/org.bus1/release system/usr/lib/modules/$(KERN_VERSION)/kernel/ipc/bus1.ko system/usr/bin/org.bus1.rdinit system/usr/bin/org.bus1.busctl
+system.img: system/usr/lib/org.bus1/release system/usr/lib/modules/$(KERN_VERSION)/kernel/ipc/bus1.ko system/usr/bin/org.bus1.rdinit system/usr/include/orb.bus1/b1.h system/usr/include/orb.bus1/c-variant.h system/usr/include/orb.bus1/c-rbtree.h
 	rm -rf system/usr/include
 	find system/usr -type f -name "*.la" -delete
 	rm -f system.img
@@ -112,6 +118,8 @@ qemu: efi-disk.img
 
 bpull:
 	git pull --rebase
+	(cd ../cvariant && git pull --rebase)
+	(cd ../crbtree && git pull --rebase)
 	(cd ../libbus1 && git pull --rebase)
 	(cd ../base && git pull --rebase)
 	(cd ../bus1 && git pull --rebase)
@@ -120,6 +128,8 @@ bpull:
 
 bclean:
 	git clean -x -d -f && rm -rf firmware linux
+	(cd ../cvariant && git clean -x -d -f)
+	(cd ../crbtree && git clean -x -d -f)
 	(cd ../libbus1 && git clean -x -d -f)
 	(cd ../base && git clean -x -d -f)
 	(cd ../bus1 && git clean -x -d -f)
@@ -127,12 +137,16 @@ bclean:
 .PHONY: bclean
 
 bgen:
+	(cd ../cvariant && ./autogen.sh b)
+	(cd ../crbtree && ./autogen.sh b)
 	(cd ../libbus1 && ./autogen.sh b)
 	(cd ../base && ./autogen.sh b)
 	[[ ! -e ../boot-efi ]] || (cd ../boot-efi && ./autogen.sh b)
 .PHONY: bgen
 
 bbuild: linux
+	(cd ../cvariant && make -j8)
+	(cd ../crbtree && make -j8)
 	(cd ../libbus1 && make -j8)
 	(cd ../base && make -j8)
 	(cd ../bus1 && make b -j8)
